@@ -28,6 +28,7 @@ options(
             "Moksha",
             "tw2.polymaps",
             "geojson",
+            "pygeoip",
         ],
         entry_points={
             'moksha.stream': (
