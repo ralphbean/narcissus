@@ -17,7 +17,7 @@ class NarcissusConsumer(Consumer):
         self.log.info("%r.consume(%r)" % (self, message))
 
 class HttpLightConsumer(Consumer):
-    topic = 'httplight_http_rawlogs'
+    topic = 'httpdlight_http_rawlogs'
     jsonify = True
 
     geoip_url = '/'.join(__file__.split('/')[:-3] +
