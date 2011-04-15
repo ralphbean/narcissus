@@ -10,5 +10,5 @@ class RandomIPProducer(PollingProducer):
     def poll(self):
         """ This method is called by the MokshaHub reactor every `frequency` """
 
-        msg = '%i.%i.%i.%i' % (*[random.randint(0,255) for i in range(4)])
+        msg = '.'.join(map(str, (random.randint(0,127) for i in range(4))))
         self.send_message(self.topic, msg)
