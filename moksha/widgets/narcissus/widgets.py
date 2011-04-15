@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 class NarcissusWidget(TW2LiveWidget, PolyMap):
-    topic = 'log2latlon'
+    topic = 'http_geojson'
 
     # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
     onmessage ="addGeoJsonToPolymap('${id}',eval(json))"
