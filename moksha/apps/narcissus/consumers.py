@@ -1,6 +1,6 @@
 from moksha.api.hub import Consumer
 from pprint import pformat
-from pygeoip import GeoIP
+from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
 
 import geojson
 import simplejson
@@ -22,7 +22,7 @@ class HttpLightConsumer(Consumer):
 
     geoip_url = '/'.join(__file__.split('/')[:-3] +
                          ["public/data/GeoLiteCity.dat"])
-    gi = GeoIP(geoip_url, GeoIP.GEOIP_MEMORY_CACHE)
+    gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
 
     def consume(self, message):
         if not message:
