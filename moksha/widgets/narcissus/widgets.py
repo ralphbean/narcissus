@@ -6,9 +6,10 @@ log = logging.getLogger(__name__)
 
 class NarcissusWidget(TW2LiveWidget, PolyMap):
     topic = 'http_geojson'
+    layer_lifetime = 1000
 
     # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
-    onmessage ="addGeoJsonToPolymap('${id}',eval(json), 10000)"
+    onmessage ="addGeoJsonToPolymap('${id}',eval(json), %i)" % layer_lifetime
 
     zoom = 1
 
