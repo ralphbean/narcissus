@@ -36,3 +36,21 @@ class HttpLightConsumer(Consumer):
             self.send_message('http_latlon', obj)
         else:
             self.log.warn("%r failed on '%s'" % (self, message))
+
+class LatLon2GeoJsonConsumer(Consumer):
+    topic = 'http_latlon'
+    jsonify = True
+
+    def consume(self, message):
+        if not message:
+            self.log.warn("%r got empty message." % self)
+            return
+
+        assert(type(message) == dict)
+
+        feature = geojson.Feature(
+            geometry=geojson.Point([message['longitude'], message['latitude']])
+        )
+        collection = geojson.FeatureCollection(features=[feature])
+        obj = simplejson.loads(geojson.dumps(collection))
+        self.send_message('http_geojson', obj)
