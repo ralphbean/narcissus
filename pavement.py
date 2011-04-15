@@ -31,10 +31,11 @@ options(
         ],
         entry_points={
             'moksha.stream': (
-                'narcissus = moksha.apps.narcissus.streams:NarcissusStream',
+                'narc_prod = moksha.apps.narcissus.streams:RandomIPProducer',
             ),
             'moksha.consumer': (
-                'narcissus = moksha.apps.narcissus.consumers:NarcissusConsumer'
+                'httpdlight = moksha.apps.narcissus.consumers:HttpLightConsumer',
+                'latlon2geo = moksha.apps.narcissus.consumers:LatLon2GeoJsonConsumer',
             ),
             'moksha.widget': (
                 'narcissus = moksha.widgets.narcissus.widgets:NarcissusWidget',
