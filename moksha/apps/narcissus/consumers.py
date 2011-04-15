@@ -28,7 +28,8 @@ class HttpLightConsumer(Consumer):
         if not message:
             self.log.warn("%r got empty message." % self)
             return
-        words = message.split()
+        self.log.info("%r got message '%s'" % (self, message))
+        words = message['body'].split()
         rec = self.gi.record_by_addr(words[0])
         if words[0] and rec and rec['latitude'] and rec['longitude']:
             obj = {
@@ -36,7 +37,7 @@ class HttpLightConsumer(Consumer):
                 'lat' : rec['latitude'],
                 'lon' : rec['longitude'],
             }
-            self.log.info("%r got %s" % (self, pformat(obj)))
+            self.log.info("%r built %s" % (self, pformat(obj)))
             self.send_message('http_latlon', obj)
         else:
             self.log.warn("%r failed on '%s'" % (self, message))
@@ -49,11 +50,11 @@ class LatLon2GeoJsonConsumer(Consumer):
         if not message:
             self.log.warn("%r got empty message." % self)
             return
-
-        assert(type(message) == dict)
+        self.log.info("%r got message '%s'" % (self, message))
+        msg = message['body']
 
         feature = geojson.Feature(
-            geometry=geojson.Point([message['longitude'], message['latitude']])
+            geometry=geojson.Point([msg['lon'], msg['lat']])
         )
         collection = geojson.FeatureCollection(features=[feature])
         obj = simplejson.loads(geojson.dumps(collection))
