@@ -24,7 +24,11 @@ options(
             'moksha.apps',
             'moksha.widgets',
         ],
-        install_requires=["Moksha"],
+        install_requires=[
+            "Moksha",
+            "tw2.polymaps",
+            "geojson",
+        ],
         entry_points={
             'moksha.stream': (
                 'narcissus = moksha.apps.narcissus.streams:NarcissusStream',

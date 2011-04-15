@@ -1,15 +1,33 @@
-from moksha.api.widgets.live import LiveWidget
-from moksha.widgets.moksha_js import moksha_js
+from moksha.api.widgets.live import TW2LiveWidget
+from tw2.polymaps import PolyMap
 
-class NarcissusWidget(LiveWidget):
-    topic = 'moksha.test'
-    params = ['id', 'topic']
-    onmessage = """
-        $('#chat_${id}').val(json.name + ': ' + json.message +
-                             $('#chat_${id}').val())
-    """
-    javascript = [moksha_js]
-    template = 'mako:moksha.widgets.narcissus.templates.widget'
+import logging
+log = logging.getLogger(__name__)
 
-    def update_params(self, d):
-        super(NarcissusWidget, self).update_params(d)
+class NarcissusWidget(TW2LiveWidget, PolyMap):
+    topic = 'log2latlon'
+
+    # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
+    onmessage ="addGeoJsonToPolymap('${id}',eval(json))"
+
+    zoom = 11
+
+    # Let the user control the map
+    interact = True
+
+    # You should get your own one of these at http://cloudmade.com/register
+    cloudmade_api_key = "1a1b06b230af4efdbb989ea99e9841af"
+
+    # To style the map tiles
+    cloudmade_tileset = 'pale-dawn'
+
+    def prepare(self):
+        # Weird thing about tw2 here --
+        #       widgets don't know how to combine their
+        #       parents resources on their own.  You have
+        #       to do it manually.  :/
+        # We could probably do this with the '__mro__' attr up in
+        # tw2.core.Widget.
+        self.resources = TW2LiveWidget.resources + PolyMap.resources
+        super(NarcissusWidget, self).prepare()
+
