@@ -26,7 +26,7 @@ options(
         ],
         install_requires=[
             "Moksha",
-            "tw2.polymaps",
+            "tw2.polymaps>=0.1a3",
             "geojson",
             "pygeoip",
         ],

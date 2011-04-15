@@ -8,7 +8,7 @@ class NarcissusWidget(TW2LiveWidget, PolyMap):
     topic = 'http_geojson'
 
     # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
-    onmessage ="addGeoJsonToPolymap('${id}',eval(json))"
+    onmessage ="addGeoJsonToPolymap('${id}',eval(json), 10000)"
 
     zoom = 1
 
