@@ -1,6 +1,9 @@
 from moksha.api.hub import Consumer
 from pprint import pformat
-import GeoIP
+from pygeoip import GeoIP
+
+import geojson
+import simplejson
 
 class NarcissusConsumer(Consumer):
 
