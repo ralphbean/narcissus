@@ -20,8 +20,9 @@ class HttpLightConsumer(Consumer):
     topic = 'httplight_http_rawlogs'
     jsonify = True
 
-    geoip_url = "/usr/share/GeoIP/GeoLiteCity.dat"
-    gi = GeoIP.open(geoip_url, GeoIP.GEOIP_MEMORY_CACHE)
+    geoip_url = '/'.join(__file__.split('/')[:-3] +
+                         ["public/data/GeoLiteCity.dat"])
+    gi = GeoIP(geoip_url, GeoIP.GEOIP_MEMORY_CACHE)
 
     def consume(self, message):
         if not message:

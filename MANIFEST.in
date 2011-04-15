@@ -1,1 +1,2 @@
 recursive-include moksha/*/narcissus/templates *
+recursive-include moksha/public
