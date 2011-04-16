@@ -31,15 +31,15 @@ options(
             "pygeoip",
         ],
         entry_points={
-            'moksha.stream': (
-                'narc_prod = moksha.apps.narcissus.streams:RandomIPProducer',
+            'moksha.root' : (
+                'root = moksha.apps.narcissus.controllers.root:NarcissusController',
             ),
             'moksha.consumer': (
                 'httpdlight = moksha.apps.narcissus.consumers:HttpLightConsumer',
                 'latlon2geo = moksha.apps.narcissus.consumers:LatLon2GeoJsonConsumer',
             ),
             'moksha.widget': (
-                'narcissus = moksha.widgets.narcissus.widgets:NarcissusWidget',
+                'narcissus = moksha.widgets.narcissus.widgets:NarcissusMapWidget',
             ),
             'moksha.connector': (
                 'narcissus = moksha.apps.narcissus.connector:NarcissusConnector'
