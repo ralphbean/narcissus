@@ -7,7 +7,6 @@ import simplejson
 
 class HttpLightConsumer(Consumer):
     topic = 'httpdlight_http_rawlogs'
-    jsonify = True
 
     geoip_url = '/'.join(__file__.split('/')[:-3] +
                          ["public/data/GeoLiteCity.dat"])
@@ -34,7 +33,6 @@ class HttpLightConsumer(Consumer):
 
 class LatLon2GeoJsonConsumer(Consumer):
     topic = 'http_latlon'
-    jsonify = True
 
     def consume(self, message):
         if not message:

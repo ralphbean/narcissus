@@ -15,10 +15,14 @@ class NarcissusMapWidget(TW2LiveWidget, PolyMap):
     # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
     onmessage ="addGeoJsonToPolymap('${id}',eval(json), %i)" % layer_lifetime
 
-    zoom = 1
+    zoom = 2.1
+    center_latlon = {'lat': 35.8, 'lon' : -344.2}
 
     # Let the user control the map
     interact = True
+
+    # Deep-linking
+    hash = True
 
     # You should get your own one of these at http://cloudmade.com/register
     cloudmade_api_key = "1a1b06b230af4efdbb989ea99e9841af"
