@@ -3,12 +3,10 @@ from moksha.lib.base import Controller
 
 import moksha.utils
 
-from moksha.widgets.narcissus.widgets import NarcissusMapWidget
-
 class NarcissusController(Controller):
-
     @expose('mako:moksha.apps.narcissus.templates.index')
     def index(self, *args, **kw):
-        tmpl_context.widget = NarcissusMapWidget
+        tmpl_context.mapwidget = moksha.utils.get_widget('narc_map')
+        tmpl_context.plotwidget = moksha.utils.get_widget('narc_plot')
         tmpl_context.moksha_socket = moksha.utils.get_widget('moksha_socket')
         return dict(options={})

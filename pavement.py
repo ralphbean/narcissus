@@ -27,6 +27,7 @@ options(
         install_requires=[
             "Moksha",
             "tw2.polymaps>=0.1a3",
+            "tw2.jqplugins.jqplot",
             "geojson",
             "pygeoip",
         ],
@@ -34,12 +35,17 @@ options(
             'moksha.root' : (
                 'root = moksha.apps.narcissus.controllers.root:NarcissusController',
             ),
+            'moksha.stream' : (
+                'series_pro = moksha.apps.narcissus.consumers:TimeSeriesProducer',
+            ),
             'moksha.consumer': (
                 'httpdlight = moksha.apps.narcissus.consumers:HttpLightConsumer',
                 'latlon2geo = moksha.apps.narcissus.consumers:LatLon2GeoJsonConsumer',
+                'series_con = moksha.apps.narcissus.consumers:TimeSeriesConsumer',
             ),
             'moksha.widget': (
-                'narcissus = moksha.widgets.narcissus.widgets:NarcissusMapWidget',
+                'narc_map = moksha.widgets.narcissus.widgets:NarcissusMapWidget',
+                'narc_plot = moksha.widgets.narcissus.widgets:NarcissusPlotWidget',
             ),
             'moksha.connector': (
                 'narcissus = moksha.apps.narcissus.connector:NarcissusConnector'

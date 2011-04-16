@@ -1,5 +1,9 @@
 from moksha.api.widgets.live import TW2LiveWidget
 from tw2.polymaps import PolyMap
+from tw2.jqplugins.jqplot.base import dateAxisRenderer_js
+
+from moksha.api.widgets.flot import LiveFlotWidget
+
 import tw2.core as twc
 
 import logging
@@ -45,3 +49,8 @@ class NarcissusMapWidget(TW2LiveWidget, PolyMap):
         self.resources.append(green_css)
         super(NarcissusMapWidget, self).prepare()
 
+class NarcissusPlotWidget(LiveFlotWidget):
+    name = 'Usage of http://mirror.rit.edu'
+    topic = 'http_metrics'
+    width = '100%'
+    height = '100%'
