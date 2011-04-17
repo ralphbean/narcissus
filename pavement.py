@@ -5,17 +5,21 @@ from paver.setuputils import (setup, find_package_data, find_packages,
 install_distutils_tasks()
 from moksha.lib.paver_tasks import *
 
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
+
+README = README.split(".. split here")[1]
+
 options(
     setup=Bunch(
         name="narcissus",
-        version="0.1",
-        release="1",
+        version="0.1.0",
         url="http://moksha.fedorahosted.org",
-        description="Describe your package here",
+        description="Realtime visualizations of web server hits",
         license="ASL 2.0",
-        long_description="",
-        author="",
-        author_email="",
+        long_description=README,
+        author="Ralph Bean",
+        author_email="ralph.bean@gmail.com",
         rpm_name='narcissus',
         packages=find_packages(),
         package_data=find_package_data(),

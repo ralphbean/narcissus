@@ -21,3 +21,5 @@ tg2-bootstrap.py
 dist
 build
 logs/*.log
+README.html
+README.pdf
