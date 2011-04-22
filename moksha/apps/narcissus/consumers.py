@@ -33,7 +33,7 @@ AGGREGATE = 'aggregate'
 
 class TimeSeriesProducer(PollingProducer):
     topic = 'http_metrics'
-    n_timesteps = 50 
+    n_timesteps = 15
     frequency = timedelta(seconds=3)
     history = {}
     jsonify = True
