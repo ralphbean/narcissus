@@ -1,4 +1,4 @@
-from moksha.api.widgets.live import TW2LiveWidget
+from moksha.api.widgets.live import LiveWidget
 from tw2.polymaps import PolyMap
 from tw2.jqplugins.jqplot.base import dateAxisRenderer_js
 
@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 green_css = twc.CSSLink(modname=__name__,
                         filename='static/css/custom_polymap.css')
 
-class NarcissusMapWidget(TW2LiveWidget, PolyMap):
+class NarcissusMapWidget(LiveWidget, PolyMap):
     topic = 'http_geojson'
     layer_lifetime = 1000
 
@@ -38,16 +38,7 @@ class NarcissusMapWidget(TW2LiveWidget, PolyMap):
     # specifies what it looks like.
     css_class = 'midnight-commander-extras'
 
-    def prepare(self):
-        # Weird thing about tw2 here --
-        #       widgets don't know how to combine their
-        #       parents resources on their own.  You have
-        #       to do it manually.  :/
-        # We could probably do this with the '__mro__' attr up in
-        # tw2.core.Widget.
-        self.resources = TW2LiveWidget.resources + PolyMap.resources
-        self.resources.append(green_css)
-        super(NarcissusMapWidget, self).prepare()
+    resources = LiveWidget.resources + PolyMap.resources + [green_css]
 
 class NarcissusPlotWidget(LiveFlotWidget):
     name = 'Usage of http://mirror.rit.edu'
