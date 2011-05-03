@@ -1,7 +1,7 @@
 Narcissus - Realtime visualizations of web server hits
 ------------------------------------------------------
 
-.. figure:: narcissus/raw/master/narcissus-caravaggio.jpg
+.. figure:: narcissus/raw/master/moksha/public/narcissus/images/narcissus-caravaggio.jpg
    :align: right
    :scale: 50 %
    :alt: Narcissus wastes a bunch of time.
@@ -29,7 +29,8 @@ Features
 Live Demo
 ---------
 
-* TODO -- please check back!
+Research Computing at RIT runs a `narcissus` instance pointed at
+http://mirror.rit.edu at http://narcissus.rc.rit.edu.
 
 Running
 -------
@@ -60,7 +61,7 @@ Authors
 Powered by
 ----------
 
-.. image:: narcissus/raw/master/moksha.png
+.. image:: narcissus/raw/master/moksha/public/narcissus/images/moksha.png
    :align: left
    :scale: 100 %
    :alt: Moksha
