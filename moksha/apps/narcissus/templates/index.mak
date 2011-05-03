@@ -3,7 +3,9 @@
 <title>Narcissus -- Realtime usage from http://mirror.rit.edu/</title>
 </head>
 <body>
-${tmpl_context.plotwidget(**options)}
+<ul>
+<li><a href="/map">Map</a></li>
+<li><a href="/plot">Chart</a></li>
 </body>
 ${tmpl_context.moksha_socket.display()}
 </html>
