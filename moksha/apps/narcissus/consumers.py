@@ -67,13 +67,6 @@ class TimeSeriesProducer(PollingProducer):
         for key in bucket.keys():
             self.history[key][-1] = bucket[key]
 
-        # For any keys that have had no activity, delete them.
-        for key in list(self.history.keys()):
-            if key == AGGREGATE:
-                continue
-            if not any(entry for entry in self.history[key]):
-                del self.history[key]
-
         # Convert from convenient 'self.history' internal repr to flot json
         json = {'data':[]}
         for key, series in self.history.iteritems():
