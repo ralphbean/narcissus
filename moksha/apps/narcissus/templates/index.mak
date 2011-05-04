@@ -6,7 +6,7 @@
 <ul>
 <li><a href="/map">Map</a></li>
 <li><a href="/plot">Chart</a></li>
-<li><a href="/aboutt">About</a></li>
+<li><a href="/about">About</a></li>
 </body>
 ${tmpl_context.moksha_socket.display()}
 </html>
