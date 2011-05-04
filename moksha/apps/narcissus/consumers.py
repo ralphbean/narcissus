@@ -51,6 +51,10 @@ class TimeSeriesProducer(PollingProducer):
     def poll(self):
         bucket = _dump_bucket()
 
+        # Convert units to "hits per second" so they're understandable
+        for k in bucket.keys():
+            bucket[k] = bucket[k] / float(self.frequency.seconds)
+
         # For any newly encountered keys, add a fake 'empty' history.
         for key in bucket:
             if key not in self.history:
