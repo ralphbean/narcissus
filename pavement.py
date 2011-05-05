@@ -30,10 +30,12 @@ options(
         ],
         install_requires=[
             "Moksha",
+            "decorator",
             "tw2.polymaps>=0.1a3",
             "tw2.jqplugins.jqplot",
             "geojson",
             "pygeoip",
+            "tw2.slideymenu>=2.0b1",
         ],
         entry_points={
             'moksha.root' : (

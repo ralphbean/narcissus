@@ -1,5 +1,11 @@
-from tg import expose, validate, tmpl_context
+from tg import expose, validate, tmpl_context, redirect
 from moksha.lib.base import Controller
+
+from moksha.apps.narcissus.decorators import (
+    with_moksha_socket,
+    with_ui_theme,
+    with_menu
+)
 
 import docutils.examples
 
@@ -20,29 +26,32 @@ def readme_as_html():
         readme = f.read()
         return docutils.examples.html_body(unicode(readme))
 
-
 class NarcissusController(Controller):
-    @expose('mako:moksha.apps.narcissus.templates.index')
+
+    @expose()
     def index(self, *args, **kw):
-        tmpl_context.mapwidget = moksha.utils.get_widget('narc_map')
-        tmpl_context.plotwidget = moksha.utils.get_widget('narc_plot')
-        tmpl_context.moksha_socket = moksha.utils.get_widget('moksha_socket')
-        return dict(options={})
+        redirect('/map')
 
-    @expose('mako:moksha.apps.narcissus.templates.plot')
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
     def plot(self, *args, **kw):
-        tmpl_context.plotwidget = moksha.utils.get_widget('narc_plot')
-        tmpl_context.moksha_socket = moksha.utils.get_widget('moksha_socket')
+        tmpl_context.widget = moksha.utils.get_widget('narc_plot')
         return dict(options={})
 
-    @expose('mako:moksha.apps.narcissus.templates.map')
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
     def map(self, *args, **kw):
-        tmpl_context.mapwidget = moksha.utils.get_widget('narc_map')
-        tmpl_context.moksha_socket = moksha.utils.get_widget('moksha_socket')
+        tmpl_context.widget = moksha.utils.get_widget('narc_map')
         return dict(options={})
 
     @expose('mako:moksha.apps.narcissus.templates.about')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
     def about(self, *args, **kw):
         tmpl_context.readme = readme_as_html()
-        tmpl_context.moksha_socket = moksha.utils.get_widget('moksha_socket')
         return dict(option={})
