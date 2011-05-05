@@ -52,7 +52,7 @@ class NarcissusController(Controller):
     @with_moksha_socket
     @with_menu
     @with_ui_theme
-    def map(self, *args, **kw):
+    def logs(self, *args, **kw):
         tmpl_context.widget = moksha.utils.get_widget('narc_logs')
         return dict(options={})
 

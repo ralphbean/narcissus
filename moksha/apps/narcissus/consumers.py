@@ -164,7 +164,7 @@ class LogColorizer(Consumer):
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
 
-    c = Ansi2HTMLConverter()
+    converter = Ansi2HTMLConverter()
 
     def consume(self, message):
         if not message:
@@ -179,7 +179,7 @@ class LogColorizer(Consumer):
         p = Popen(['ccze', '-A'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
         ansi = p.communicate(input=message.body)[0]
 
-        html = self.converter.convert(ansi, full=False)
+        html = self.converter.convert(ansi, full=False).rstrip()
 
         obj = { 'html' : html }
         self.send_message('http_colorlogs', simplejson.dumps(obj))

@@ -5,6 +5,7 @@ from tw2.jqplugins.jqplot.base import dateAxisRenderer_js
 from moksha.api.widgets.flot import LiveFlotWidget
 
 import tw2.core as twc
+import tw2.jquery
 
 import logging
 log = logging.getLogger(__name__)
@@ -47,13 +48,15 @@ class NarcissusPlotWidget(LiveFlotWidget):
     height = '100%'
 
 logswidget_js = twc.JSLink(modname=__name__, filename="static/js/logs.js")
+logswidget_css = twc.CSSLink(modname=__name__, filename="static/css/logs.css")
 
 class NarcissusLogsWidget(LiveWidget):
     resources = LiveWidget.resources + [
         tw2.jquery.jquery_js,
         logswidget_js,
+        logswidget_css,
     ]
 
     topic = 'http_colorlogs'
     onmessage = "addLogMessage('${id}', eval(json))"
-    template = "moksha.apps.narcissus.widgets.templates.logs"
+    template = "mako:moksha.widgets.narcissus.templates.logs"
