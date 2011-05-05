@@ -170,6 +170,11 @@ class LogColorizer(Consumer):
         if not message:
             return
 
+        # Pad the ip so the logs line up nice and straight.
+        # This is also slow.  Could we replace this with a regex?
+        ip, rest = message.body.split(' ', 1)
+        msg = "%16s %s" % (ip, rest)
+
         # This has got to be slow as all balls.  Can we do this in pure python?
         # TODO -- look into ripping code from pctail.  It is not nearly as good
         # as ccze, but it is in python so we can avoid dropping down through
@@ -177,7 +182,7 @@ class LogColorizer(Consumer):
         # starting point for our own colorizing.
         #       http://sourceforge.net/projects/pctail/
         p = Popen(['ccze', '-A'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
-        ansi = p.communicate(input=message.body)[0]
+        ansi = p.communicate(input=msg)[0]
 
         html = self.converter.convert(ansi, full=False).rstrip()
 
