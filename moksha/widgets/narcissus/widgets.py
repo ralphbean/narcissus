@@ -45,3 +45,15 @@ class NarcissusPlotWidget(LiveFlotWidget):
     topic = 'http_metrics'
     width = '100%'
     height = '100%'
+
+logswidget_js = twc.JSLink(modname=__name__, filename="static/js/logs.js")
+
+class NarcissusLogsWidget(LiveWidget):
+    resources = LiveWidget.resources + [
+        tw2.jquery.jquery_js,
+        logswidget_js,
+    ]
+
+    topic = 'http_colorlogs'
+    onmessage = "addLogMessage('${id}', eval(json))"
+    template = "moksha.apps.narcissus.widgets.templates.logs"

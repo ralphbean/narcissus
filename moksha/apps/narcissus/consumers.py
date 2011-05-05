@@ -3,6 +3,8 @@ from moksha.api.hub.producer import PollingProducer
 from pprint import pformat
 from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
 from datetime import timedelta
+from subprocess import Popen, PIPE, STDOUT
+from ansi2html import Ansi2HTMLConverter
 
 import geojson
 import simplejson
@@ -157,3 +159,27 @@ class LatLon2GeoJsonConsumer(Consumer):
         collection = geojson.FeatureCollection(features=[feature])
         obj = simplejson.loads(geojson.dumps(collection))
         self.send_message('http_geojson', obj)
+
+class LogColorizer(Consumer):
+    topic = 'httpdlight_http_rawlogs'
+    jsonify = False
+
+    c = Ansi2HTMLConverter()
+
+    def consume(self, message):
+        if not message:
+            return
+
+        # This has got to be slow as all balls.  Can we do this in pure python?
+        # TODO -- look into ripping code from pctail.  It is not nearly as good
+        # as ccze, but it is in python so we can avoid dropping down through
+        # subprocess.  It's also written like a nightmare but we can use it as a
+        # starting point for our own colorizing.
+        #       http://sourceforge.net/projects/pctail/
+        p = Popen(['ccze', '-A'], stdout=PIPE, stdin=PIPE, stderr=STDOUT)
+        ansi = p.communicate(input=message.body)[0]
+
+        html = self.converter.convert(ansi, full=False)
+
+        obj = { 'html' : html }
+        self.send_message('http_colorlogs', simplejson.dumps(obj))
