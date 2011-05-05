@@ -38,17 +38,25 @@ Running
 Create ``~/.fabricrc`` with the following content::
 
     narcissus_source_location = ~/narc/narcissus
-    moksha_source_location = ~/narc/narcissus/moksha-proper
+    moksha_source_location = ~/narc/moksha
 
 .. parsed-literal::
 
+    $ mkdir narc && cd narc
+    $ git clone git://github.com/ralphbean/narcissus.git
+    $ git clone git://github.com/ralphbean/moksha.git
+
     $ sudo yum -y install fabric
-    $ cd narc/moksha
+
+    $ cd moksha
     $ fab -H localhost boostrap
+    $ sudo service qpidd start
+
     $ cd ../narcissus
     $ fab -H localhost install
+
     $ cd ../moksha
-    $ fab -H localhost stop start
+    $ fab -H localhost restart
 
 Authors
 -------
