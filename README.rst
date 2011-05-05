@@ -58,6 +58,11 @@ Create ``~/.fabricrc`` with the following content::
     $ cd ../moksha
     $ fab -H localhost restart
 
+Gotchas
+-------
+
+- Watch out for iptables on ports 9000, 5672, 8080, and 8000.
+
 Authors
 -------
 * Ralph Bean <ralph.bean@gmail.com>
