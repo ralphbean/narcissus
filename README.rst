@@ -35,12 +35,13 @@ http://mirror.rit.edu at http://narcissus.rc.rit.edu.
 Running
 -------
 
-Create ``~/.fabricrc`` with the following content::
+On your machine that will host `narcissus`, say, ``monitoring.host.org``,
+create ``~/.fabricrc`` with the following content::
 
     narcissus_source_location = ~/narc/narcissus
     moksha_source_location = ~/narc/moksha
 
-.. parsed-literal::
+Then run the following commands::
 
     $ mkdir narc && cd narc
     $ git clone git://github.com/ralphbean/narcissus.git
@@ -57,6 +58,27 @@ Create ``~/.fabricrc`` with the following content::
 
     $ cd ../moksha
     $ fab -H localhost restart
+
+In the same place, you may want to run the following command, which can help you
+figure out what's up (if anything is 'up')::
+
+    $ fab -H localhost wtf
+
+Finally, on the machine that is being monitored, say, ``monitored.host.org``,
+run the following to setup the narcissus `sending` script::
+
+    $ sudo su -
+    $ yum install inotail python-qpid
+
+    $ mkdir narc && cd narc
+    $ git clone git://github.com/ralphbean/narcissus.git
+
+And to run it and send stuff to your `monitoring` host::
+
+    $ inotail -f /var/log/lighttpd/access.log | \
+        ./narcissus/scripts/amqp-log-sender.py --target=monitoring.host.org
+
+``inotail`` is faster than ``tail``, btw.
 
 Gotchas
 -------
