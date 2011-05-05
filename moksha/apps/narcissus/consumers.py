@@ -1,3 +1,45 @@
+""" consumers.py  -- where all the moksha-hub madness lives.
+
+Diagram::
+
+| narcissus/amqp-log-sender.py --------\
+|                                      |
+|                                      V
+|                             <some qpid instance>
+|                                      |
+|                                      V
+|                               The moksha-hub
+|                                      |
+|                                      V
+|                        Topic:  httpdlight_http_rawlogs
+|                                      |
+|       /-----------------------------------\
+|       |                   |               |
+|       V                   V               V
+| TimeSeriesConsumer   LogColorizer    HttpLightConsumer
+|       |                   |               |
+|       V                   |               V
+|   _bucket                 |        LatLon2GeoJsonConsumer
+|       |                   |               |
+|       V                   |               |
+| TimeSeriesProducer        |               |
+|       |                   |               |
+|       V                   V               V
+|    orbited             orbited         orbited
+|       |                  *|  *            |
+|      *    *       *   * *  *   *       ** |*
+|   *   *  *    * *  *THE INTERNET *  *   *   * * *
+|       *    *         * *  *   *       *   *       *
+|       |                *  |*
+|       |                   |               |
+|       V                   |               V
+| NarcissusPlotWidget       |       NarcissusMapWidget
+|                           V
+|                   NarcissusLogWidget
+|
+
+"""
+
 from moksha.api.hub import Consumer
 from moksha.api.hub.producer import PollingProducer
 from pprint import pformat
