@@ -172,8 +172,8 @@ class LogColorizer(Consumer):
 
         # Pad the ip so the logs line up nice and straight.
         # This is also slow.  Could we replace this with a regex?
-        ip, rest = message.body.split(' ', 1)
-        msg = "%16s %s" % (ip, rest)
+        ip, host, rest = message.body.split(' ', 2)
+        msg = "%16s %17s %s" % (ip, host, rest)
 
         # This has got to be slow as all balls.  Can we do this in pure python?
         # TODO -- look into ripping code from pctail.  It is not nearly as good
