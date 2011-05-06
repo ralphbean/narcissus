@@ -1,6 +1,5 @@
 Narcissus - Realtime visualizations of web server hits
 ------------------------------------------------------
-
 .. figure:: narcissus/raw/master/moksha/public/narcissus/images/narcissus-caravaggio.jpg
    :align: right
    :scale: 50 %
@@ -10,31 +9,73 @@ Narcissus - Realtime visualizations of web server hits
 
 .. split here
 
-Source
-------
+What is this?
+-------------
+This is ``narcissus``.  It is a web application that visualizes web server hits
+as they happen in `real time`.
 
-Get the source from `github.com <http://github.com/ralphbean/narcissus>`_.
+Features:
 
-
-Features
---------
-
-* IP addresses converted to latitude/longitude plotted
-  on `polymaps <http://polymaps.org/>`_ as they happen.
-* Realtime graphs of url-hit distribution.
+* IP addresses converted to latitude/longitude, then streamed via
+  `orbited <http://http://orbited.org/>`_ and plotted on `polymaps
+  <http://polymaps.org/>`_.
+* Realtime graphs of url-hit distribution with `jQuery flot
+  <http://code.google.com/p/flot/>`_.
+* Colorized raw logs streamed to the browser by way of `ccze
+  <http://freshmeat.net/projects/ccze/>`_ and `ansi2html
+  <http://pypi.python.org/pypi/ansi2html>`_.
 * `AMQP (Advanced Message Queueing Protocol)
   <http://www.amqp.org/confluence/display/AMQP/Advanced+Message+Queuing+Protocol>`_
-  from logs to browser.  *Fast*.  Little to no handshaking overhead.
+  from logs to browser.
+* **Fast**.  Little to no handshaking overhead.
+
+The Story
+---------
+``narcissus`` was written on April 15th, 2011 at the `hackfest` hosted by the
+the `Rochester Institute of Technology <http://www.rit.edu>`_ FOSSbox.
+
+We knew that `mirror.rit.edu <http://mirror.rit.edu>`_ was cool, fast, and was
+the site with the heaviest traffic on RIT's entire network, but looking at a
+mirror frontpage or silently updating your Linux distribution in the background
+is not very flashy, not something to phone home about.  We wanted to make
+something cool, something that would show the 'big picture' of the Open Source
+world.  We hope we did that with ``narcissus``.
+
+The RIT FOSSbox is the launch pad for all things Free & Open Source
+Software (FOSS) at RIT.  It is parented both by the `Center for Student
+Innovation <http://www.rit.edu/academicaffairs/centerforstudentinnovation/>`_
+(physically) and the `FOSS@RIT Initiative <http://foss.rit.edu>`_ (virtually).
+They have great `staff <http://foss.rit.edu/people>`_,
+`mentors <http://foss.rit.edu/mentors>`_, and students who all work on
+`amazing stuff <http://foss.rit.edu/projects>`_.
+If you read their `history <http://foss.rit.edu/history>`_ you can learn all
+sorts of neat things about their work on the One Laptop Per Child project.
+
+The ``narcissus`` authors got together and got the proof-of-concept (and some
+bling-bling) working in a single afternoon but really it was the space, time,
+and environment provided by the FOSSbox that made it possible.
+
+This project could **not** have happened without the hard work of `Remy
+DeCausemaker <https://opensource.com/users/remyd>`_, the "FOSSBoss" and
+backbone of the FOSSbox.  He has made countless contributions at cost to
+self that drive forward the far-most-reaching edge of software development
+on campus and should be recognized therefore.
 
 Live Demo
 ---------
+You can see ``narcissus`` running live at `narcissus.rc.rit.edu
+<http://narcissus.rc.rit.edu>`_.
 
-Research Computing at RIT runs a `narcissus` instance pointed at
-http://mirror.rit.edu at http://narcissus.rc.rit.edu.
+The Research Computing department at the Rochester Institute of Technology runs
+that ``narcissus`` instance.  It is pointed at their **very** active `FOSS mirror
+<http://mirror.rit.edu>`_.  (That site is the highest-traffic site at RIT!)
+
+Source
+------
+Get the source from `github.com <http://github.com/ralphbean/narcissus>`_.
 
 Running
 -------
-
 On your machine that will host `narcissus`, say, ``monitoring.host.org``,
 create ``~/.fabricrc`` with the following content::
 
@@ -82,20 +123,31 @@ And to run it and send stuff to your `monitoring` host::
 
 Gotchas
 -------
-
 - Watch out for iptables on ports 9000, 5672, 8080, and 8000.
+
+IRC
+---
+Try us in ``#moksha`` on ``irc.freenode.net``.
 
 Authors
 -------
 * Ralph Bean <ralph.bean@gmail.com>
+
+  * `threebean.wordpress.com <http://threebean.wordpress.com>`_
+
 * Luke Macken <lmacken@redhat.com>
+
+  * `lewk.org <http://lewk.org>`_
+
 * Lee Burton <lburton@mrow.org>
+
+  * `mrow.org <http://mrow.org>`_
+
 
 .. split here
 
 Powered by
 ----------
-
 .. image:: narcissus/raw/master/moksha/public/narcissus/images/moksha.png
    :align: left
    :scale: 100 %
