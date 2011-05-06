@@ -32,24 +32,24 @@ Features:
 The Story
 ---------
 ``narcissus`` was written on April 15th, 2011 at the `hackfest` hosted by the
-the `Rochester Institute of Technology <http://www.rit.edu>`_ FOSSbox.
+FOSSBox at `Rochester Institute of Technology <http://www.rit.edu>`_.
 
 We knew that `mirror.rit.edu <http://mirror.rit.edu>`_ was cool, fast, and was
 the site with the heaviest traffic on RIT's entire network, but looking at a
 mirror frontpage or silently updating your Linux distribution in the background
-is not very flashy, not something to phone home about.  We wanted to make
-something cool, something that would show the 'big picture' of the Open Source
-world.  We hope we did that with ``narcissus``.
+is not very flashy--not something to phone home about. We wanted to make
+something cool. Something that would show the 'big picture' of the Open Source
+world. We feel we did that with ``narcissus``.
 
-The RIT FOSSbox is the launch pad for all things Free & Open Source
-Software (FOSS) at RIT.  It is parented both by the `Center for Student
-Innovation <http://www.rit.edu/academicaffairs/centerforstudentinnovation/>`_
-(physically) and the `FOSS@RIT Initiative <http://foss.rit.edu>`_ (virtually).
-They have great `staff <http://foss.rit.edu/people>`_,
-`mentors <http://foss.rit.edu/mentors>`_, and students who all work on
-`amazing stuff <http://foss.rit.edu/projects>`_.
-If you read their `history <http://foss.rit.edu/history>`_ you can learn all
-sorts of neat things about their work on the One Laptop Per Child project.
+The RIT FOSSbox is the launch pad for all things Free & Open Source Software
+(FOSS) at RIT. It is parented both by the `Center for Student Innovation
+<http://www.rit.edu/academicaffairs/centerforstudentinnovation/>`_ (physically)
+and the `Lab for Technological Literacy's <http://ltl.rit.edu>`_ `FOSS@RIT
+Initiative <http://foss.rit.edu>`_ (virtually). They have great `staff
+<http://foss.rit.edu/people>`_, `mentors <http://foss.rit.edu/mentors>`_, and
+students who all work on `amazing stuff <http://foss.rit.edu/projects>`_.  If
+you read their `history <http://foss.rit.edu/history>`_ you can learn all sorts
+of neat things about their work on the One Laptop Per Child project.
 
 The ``narcissus`` authors got together and got the proof-of-concept (and some
 bling-bling) working in a single afternoon but really it was the space, time,
@@ -57,9 +57,12 @@ and environment provided by the FOSSbox that made it possible.
 
 This project could **not** have happened without the hard work of `Remy
 DeCausemaker <https://opensource.com/users/remyd>`_, the "FOSSBoss" and
-backbone of the FOSSbox.  He has made countless contributions at cost to
-self that drive forward the far-most-reaching edge of software development
-on campus and should be recognized therefore.
+backbone of the FOSSbox. He and his students have made countless contributions
+at cost to self that push the limits in the art of software development and
+code culture on campus, and should be recognized therefore. Together with `Luke
+Macken <http://lewk.org>`_, `RJ Bean <http://threebean.wordpress.com`_, the
+power of `Moksha <http://fedorahosted.org/moksha>`_, and the support of the
+Grey Beards, RIT has become a real center of gravity for the FOSS Movement.
 
 Live Demo
 ---------
