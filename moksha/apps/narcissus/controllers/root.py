@@ -17,11 +17,8 @@ log = logging.getLogger(__name__)
 
 def readme_as_html():
     """ Ridiculous """
-    log.info("readme as html")
     root = '/'.join(__file__.split('/')[:-4])
-    log.info("readme as html", root)
     fname = root + '/README.rst'
-    log.info("readme as html", fname)
     with open(fname, 'r') as f:
         readme = f.read()
         return docutils.examples.html_body(unicode(readme))
