@@ -1,2 +1,2 @@
-<%inherit file="moksha.apps.narcissus.templates.master"/>
+<%inherit file="moksha.apps.narcissus.templates.nicemaster"/>
 ${tmpl_context.readme | n}
