@@ -60,7 +60,7 @@ DeCausemaker <https://opensource.com/users/remyd>`_, the "FOSSBoss" and
 backbone of the FOSSbox. He and his students have made countless contributions
 at cost to self that push the limits in the art of software development and
 code culture on campus, and should be recognized therefore. Together with `Luke
-Macken <http://lewk.org>`_, `RJ Bean <http://threebean.wordpress.com`_, the
+Macken <http://lewk.org>`_, `RJ Bean <http://threebean.wordpress.com>`_, the
 power of `Moksha <http://fedorahosted.org/moksha>`_, and the support of the
 Grey Beards, RIT has become a real center of gravity for the FOSS Movement.
 
