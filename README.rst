@@ -12,7 +12,7 @@ Narcissus - Realtime visualizations of web server hits
 What is this?
 -------------
 This is ``narcissus``.  It is a web application that visualizes web server hits
-as they happen in `real time`.
+as they happen in real time.
 
 Features:
 

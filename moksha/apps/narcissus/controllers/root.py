@@ -21,6 +21,7 @@ def readme_as_html():
     fname = root + '/README.rst'
     with open(fname, 'r') as f:
         readme = f.read()
+        readme = readme.split('.. split here')[1]
         return docutils.examples.html_body(unicode(readme))
 
 class NarcissusController(Controller):
