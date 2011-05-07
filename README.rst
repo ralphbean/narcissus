@@ -44,8 +44,8 @@ world. We feel we did that with ``narcissus``.
 The RIT FOSSbox is the launch pad for all things Free & Open Source Software
 (FOSS) at RIT. It is parented both by the `Center for Student Innovation
 <http://www.rit.edu/academicaffairs/centerforstudentinnovation/>`_ (physically)
-and the `Lab for Technological Literacy's <http://ltl.rit.edu>`_ `FOSS@RIT
-Initiative <http://foss.rit.edu>`_ (virtually). They have great `staff
+and the Lab for Technological Literacy's `FOSS@RIT Initiative
+<http://foss.rit.edu>`_ (virtually). They have great `staff
 <http://foss.rit.edu/people>`_, `mentors <http://foss.rit.edu/mentors>`_, and
 students who all work on `amazing stuff <http://foss.rit.edu/projects>`_.  If
 you read their `history <http://foss.rit.edu/history>`_ you can learn all sorts
