@@ -44,7 +44,8 @@ from moksha.api.hub import Consumer
 from moksha.api.hub.producer import PollingProducer
 from pprint import pformat
 from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
-from datetime import timedelta
+from datetime import timedelta, datetime
+from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
 from ansi2html import Ansi2HTMLConverter
 
@@ -53,6 +54,8 @@ import moksha.apps.narcissus.model as m
 import geojson
 import simplejson
 import threading
+import re
+
 
 import logging
 log = logging.getLogger(__name__)
@@ -168,33 +171,53 @@ class HttpLightConsumer(Consumer):
                          ["public/data/GeoLiteCity.dat"])
     gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
 
+    def __init__(self, *args, **kwargs):
+        self.llre = re.compile('^(\d+\.\d+\.\d+\.\d+)\s(\S+)\s(\S+)\s\[(\S+\s\S+)\]\s"(\S+)\s(\S+)\s(\S+)"\s(\d+)\s(\d+)\s"(\S+)"\s"(.+)"\s(\d+)\s(\d+)$')
+        super(HttpLightConsumer, self).__init__(*args, **kwargs)
+
     def consume(self, message):
         if not message:
             #self.log.warn("%r got empty message." % self)
             return
         #self.log.debug("%r got message '%r'" % (self, message))
-        words = message.body.split()
-        rec = self.gi.record_by_addr(words[0])
-        if words[0] and rec and rec['latitude'] and rec['longitude']:
-            obj = {
-                'ip' : words[0],
-                'lat' : rec['latitude'],
-                'lon' : rec['longitude'],
-            }
-            #self.log.debug("%r built %s" % (self, pformat(obj)))
-            self.send_message('http_latlon', simplejson.dumps(obj))
 
-            # Now log to the DB.  We're doing this every hit which will be slow.
-            hit = m.ServerHit(
-                ip=words[0],
-                lat=rec['latitude'],
-                lon=rec['longitude'],
-            )
-            self.DBSession.add(hit)
-            self.DBSession.commit()
-        else:
-            #self.log.warn("%r failed on '%s'" % (self, message))
-            pass
+        logres = self.llre.match(message.body)
+        if logres and logres.group(1):
+            rec = self.gi.record_by_addr(logres.group(1))
+            if rec and rec['latitude'] and rec['longitude']:
+                notz=logres.group(4).split(" ")[0]
+                logdate=datetime.strptime(notz,"%d/%b/%Y:%H:%M:%S")
+                obj = {
+                    'ip' : logres.group(1),
+                    'lat' : rec['latitude'],
+                    'lon' : rec['longitude'],
+                    'logdatetime' : logdate,
+                    'requesttype' : logres.group(5),
+                    'filenamehash' : md5(logres.group(6)).hexdigest(),
+                    'httptype' : logres.group(7),
+                    'statuscode' : logres.group(8),
+                    'filesize' : logres.group(9),
+                    'refererhash' : md5(logres.group(11)).hexdigest(),
+                    'bytesin' : logres.group(12),
+                    'bytesout' : logres.group(13)
+                }
+                # Now log to the DB.  We're doing this every hit which will be slow.
+                hit = m.ServerHit(
+                    **obj
+                )
+                self.DBSession.add(hit)
+                self.DBSession.commit()
+
+                # python datetime objects are not JSON serializable
+                # We should make this more readable on the other side
+                obj['logdatetime'] = str(obj['logdatetime'])
+
+                #self.log.debug("%r built %s" % (self, pformat(obj)))
+                self.send_message('http_latlon', simplejson.dumps(obj))
+
+            else:
+                #self.log.warn("%r failed on '%s'" % (self, message))
+                pass
 
 class LatLon2GeoJsonConsumer(Consumer):
     topic = 'http_latlon'
