@@ -173,28 +173,50 @@ class HttpLightConsumer(Consumer):
             #self.log.warn("%r got empty message." % self)
             return
         #self.log.debug("%r got message '%r'" % (self, message))
-        words = message.body.split()
-        rec = self.gi.record_by_addr(words[0])
-        if words[0] and rec and rec['latitude'] and rec['longitude']:
-            obj = {
-                'ip' : words[0],
-                'lat' : rec['latitude'],
-                'lon' : rec['longitude'],
-            }
-            #self.log.debug("%r built %s" % (self, pformat(obj)))
-            self.send_message('http_latlon', simplejson.dumps(obj))
+        regex_result = self.llre.match(message.body)
+        if regex_result and regex_result.group(1):
+            # Get IP 2 LatLon info
+            rec = self.gi.record_by_addr(regex_result.group(1))
+            if rec and rec['latitude'] and rec['longitude']:
+                # Strip the timezone from the logged timestamp.  Python can't
+                # parse it.
+                no_timezone = regex_result.group(4).split(" ")[0]
 
-            # Now log to the DB.  We're doing this every hit which will be slow.
-            hit = m.ServerHit(
-                ip=words[0],
-                lat=rec['latitude'],
-                lon=rec['longitude'],
-            )
-            self.DBSession.add(hit)
-            self.DBSession.commit()
-        else:
-            #self.log.warn("%r failed on '%s'" % (self, message))
-            pass
+                # Format the log timestamp into a python datetime object
+                log_date = datetime.strptime(no_timezone,"%d/%b/%Y:%H:%M:%S")
+
+                # Build a big python dictionary that we're going to stream
+                # around town (and use to build a model.ServerHit object.
+                obj = {
+                    'ip'            : regex_result.group(1),
+                    'lat'           : rec['latitude'],
+                    'lon'           : rec['longitude'],
+                    'logdatetime'   : log_date,
+                    'requesttype'   : regex_result.group(5),
+                    'filenamehash'  : md5(regex_result.group(6)).hexdigest(),
+                    'httptype'      : regex_result.group(7),
+                    'statuscode'    : regex_result.group(8),
+                    'filesize'      : regex_result.group(9),
+                    'refererhash'   : md5(regex_result.group(11)).hexdigest(),
+                    'bytesin'       : regex_result.group(12),
+                    'bytesout'      : regex_result.group(13),
+                }
+
+                # Now log to the DB.  We're doing this every hit which will be slow.
+                hit = m.ServerHit(**obj)
+                self.DBSession.add(hit)
+                self.DBSession.commit()
+
+                # python datetime objects are not JSON serializable
+                # We should make this more readable on the other side
+                obj['logdatetime'] = str(obj['logdatetime'])
+
+                #self.log.debug("%r built %s" % (self, pformat(obj)))
+                self.send_message('http_latlon', simplejson.dumps(obj))
+
+            else:
+                #self.log.warn("%r failed on '%s'" % (self, message))
+                pass
 
 class LatLon2GeoJsonConsumer(Consumer):
     topic = 'http_latlon'
