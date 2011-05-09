@@ -46,6 +46,13 @@ class NarcissusPlotWidget(LiveFlotWidget):
     topic = 'http_metrics'
     width = '100%'
     height = '100%'
+    onmessage = """
+        if (json == null) {
+            return;
+        } else {
+            %s
+        }
+        """ % LiveFlotWidget.onmessage
 
 logswidget_js = twc.JSLink(modname=__name__, filename="static/js/logs.js")
 logswidget_css = twc.CSSLink(modname=__name__, filename="static/css/logs.css")

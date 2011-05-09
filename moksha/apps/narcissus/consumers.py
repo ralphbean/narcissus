@@ -16,7 +16,7 @@ Diagram::
 |       /-----------------------------------\
 |       |                   |               |
 |       V                   V               V
-| TimeSeriesConsumer   LogColorizer    HttpLightConsumer
+| TimeSeriesConsumer   LogColorizer    HttpLightConsumer -----> sqlalchemy
 |       |                   |               |
 |       V                   |               V
 |   _bucket                 |        LatLon2GeoJsonConsumer
@@ -47,6 +47,8 @@ from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
 from datetime import timedelta
 from subprocess import Popen, PIPE, STDOUT
 from ansi2html import Ansi2HTMLConverter
+
+import moksha.apps.narcissus.model as m
 
 import geojson
 import simplejson
@@ -158,6 +160,7 @@ class TimeSeriesConsumer(Consumer):
         _pump_bucket(key)
 
 class HttpLightConsumer(Consumer):
+    app = 'narcissus' # this connects our ``self.DBSession``
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
 
@@ -180,6 +183,15 @@ class HttpLightConsumer(Consumer):
             }
             #self.log.debug("%r built %s" % (self, pformat(obj)))
             self.send_message('http_latlon', simplejson.dumps(obj))
+
+            # Now log to the DB.  We're doing this every hit which will be slow.
+            hit = m.ServerHit(
+                ip=words[0],
+                lat=rec['latitude'],
+                lon=rec['longitude'],
+            )
+            self.DBSession.add(hit)
+            self.DBSession.commit()
         else:
             #self.log.warn("%r failed on '%s'" % (self, message))
             pass

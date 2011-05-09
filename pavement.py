@@ -30,6 +30,10 @@ options(
         ],
         install_requires=[
             "Moksha",
+            "sqlalchemy",
+            "pymysql_sa",
+            "MySQL-python",
+            "zope.sqlalchemy",
             "decorator",
             "ansi2html>=0.6.0",
             "tw2.polymaps>=0.1a3",
