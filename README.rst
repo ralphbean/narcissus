@@ -108,6 +108,13 @@ figure out what's up (if anything is 'up')::
 
     $ fab -H localhost wtf
 
+If this stuff's not working for you, try this::
+
+    $ cd ~/narc/moksha
+    $ workon moksha
+    $ killall orbited ; killall moksha-hub ; killall paster
+    $ moksha-hub -v & orbited -c orbited.cfg & paster serve development.ini
+
 Finally, on the machine that is being monitored, say, ``monitored.host.org``,
 run the following to setup the narcissus `sending` script::
 
