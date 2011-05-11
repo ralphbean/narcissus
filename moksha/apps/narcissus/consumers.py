@@ -44,7 +44,8 @@ from moksha.api.hub import Consumer
 from moksha.api.hub.producer import PollingProducer
 from pprint import pformat
 from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
-from datetime import timedelta
+from datetime import timedelta, datetime
+from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
 from ansi2html import Ansi2HTMLConverter
 
@@ -53,6 +54,8 @@ import moksha.apps.narcissus.model as m
 import geojson
 import simplejson
 import threading
+import re
+
 
 import logging
 log = logging.getLogger(__name__)
@@ -167,6 +170,10 @@ class HttpLightConsumer(Consumer):
     geoip_url = '/'.join(__file__.split('/')[:-3] +
                          ["public/data/GeoLiteCity.dat"])
     gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
+
+    def __init__(self, *args, **kwargs):
+        self.llre = re.compile('^(\d+\.\d+\.\d+\.\d+)\s(\S+)\s(\S+)\s\[(\S+\s\S+)\]\s"(\S+)\s(\S+)\s(\S+)"\s(\d+)\s(\d+)\s"(\S+)"\s"(.+)"\s(\d+)\s(\d+)$')
+        super(HttpLightConsumer, self).__init__(*args, **kwargs)
 
     def consume(self, message):
         if not message:
