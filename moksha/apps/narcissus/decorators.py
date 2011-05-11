@@ -17,8 +17,11 @@ def with_menu(f, *args, **kw):
                 'label' : 'Map',
                 'href' : '/map',
             },{
-                'label' : 'Chart',
-                'href' : '/plot',
+                'label' : 'Files',
+                'href' : '/filenames',
+            },{
+                'label' : 'Countries',
+                'href' : '/countries',
             },{
                 'label' : 'Logs',
                 'href' : '/logs',
