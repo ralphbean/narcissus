@@ -190,8 +190,14 @@ class HttpLightConsumer(Consumer):
                 # parse it.
                 no_timezone = regex_result.group(4).split(" ")[0]
 
-                # Format the log timestamp into a python datetime object
-                log_date = datetime.strptime(no_timezone,"%d/%b/%Y:%H:%M:%S")
+                try:
+                    # Format the log timestamp into a python datetime object
+                    log_date = datetime.strptime(
+                        no_timezone, "%d/%b/%Y:%H:%M:%S")
+                except ImportError as e:
+                    # There was some thread error.  Crap.
+                    self.log.warn(str(e))
+                    return
 
                 # Build a big python dictionary that we're going to stream
                 # around town (and use to build a model.ServerHit object.
