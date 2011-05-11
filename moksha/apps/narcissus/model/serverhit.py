@@ -21,6 +21,6 @@ class ServerHit(DeclarativeBase):
     bytesout = Column(Float)
     statuscode = Column(Float)
     refererhash = Column(String(32))
-    filenamehash = Column(String(32))
+    filename = Column(String(128))
     requesttype = Column(String(10))
     httptype = Column(String(10))

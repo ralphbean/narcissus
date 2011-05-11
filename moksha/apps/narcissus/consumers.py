@@ -14,30 +14,30 @@ Diagram::
 |                        Topic:  httpdlight_http_rawlogs
 |                                      |
 |       /-----------------------------------\
+|       |                                   |
+|       V                                   V
+|  LogColorizer             /------- HttpLightConsumer ---> sqlalchemy
+|       |                   V               |
+|       |           TimeSeriesConsumer      V
+|       |                   |        LatLon2GeoJsonConsumer
+|       |                   V               |
+|       |               _bucket             |
 |       |                   |               |
-|       V                   V               V
-| TimeSeriesConsumer   LogColorizer    HttpLightConsumer -----> sqlalchemy
-|       |                   |               |
-|       V                   |               V
-|   _bucket                 |        LatLon2GeoJsonConsumer
-|       |                   |               |
-|       V                   |               |
-| TimeSeriesProducer        |               |
-|       |                   |               |
-|       V                   V               V
-|    orbited             orbited         orbited
-|       |                  *|  *            |
-|      *    *       *   * *  *   *       ** |*
-|   *   *  *    * *  *THE INTERNET *  *   *   * * *
-|       *    *         * *  *   *       *   *       *
-|       |                *  |*
-|       |                   |               |
-|       V                   |               V
-| NarcissusPlotWidget       |       NarcissusMapWidget
+|       |                   V               |
+|       V             TimeSeriesProducer    V
+|    orbited                |            orbited
+|       |                   V               |
+|      *    *            orbited         ** |*
+|   *   *  *    *          *|  *      *   *   * * *
+|       *    *      *   * *  *   *      *   *       *
+|       |         *  *THE INTERNET *        |
+|       |              * *  *   *           |
+|       V                *  |*              V
+| NarcissusLogWidget        |       NarcissusMapWidget
+|                           |
+|                           |
 |                           V
-|                   NarcissusLogWidget
-|
-
+|                  NarcissusPlotWidget
 """
 
 from moksha.api.hub import Consumer
@@ -71,25 +71,30 @@ def _dump_bucket():
         _bucket = {}
     return retval
 
-def _pump_bucket(key):
+def _pump_bucket(category, key):
     """ Increments `key` in for the current timestep.  Thread safe. """
     global _bucket_lock
     global _bucket
     with _bucket_lock:
-        _bucket[key] = _bucket.get(key, 0) + 1
+        if not category in _bucket:
+            _bucket[category] = {}
+        _bucket[category][key] = _bucket[category].get(key, 0) + 1
 
 AGGREGATE = 'aggregate'
 
 class TimeSeriesProducer(PollingProducer):
-    topic = 'http_metrics'
-    n_timesteps = 15
+    n_timesteps = 5
     frequency = timedelta(seconds=3)
     history = {}
+    series = ['filename', 'country']
     jsonify = True
 
     def __init__(self, *args, **kw):
         super(TimeSeriesProducer, self).__init__(*args, **kw)
-        self.history = { AGGREGATE : self._make_empty_hist() }
+        self.history = dict(
+            [(name, {AGGREGATE : self._make_empty_hist()})
+             for name in self.series]
+        )
 
     def _make_empty_hist(self):
         return [0] * self.n_timesteps
@@ -98,31 +103,38 @@ class TimeSeriesProducer(PollingProducer):
         return [[i, series[i]] for i in range(self.n_timesteps)]
 
     def poll(self):
-        bucket = _dump_bucket()
+        __bucket = _dump_bucket()
+        for key in __bucket.keys():
+            self.process_bucket(
+                series_name=key,
+                bucket=__bucket[key]
+            )
 
+    def process_bucket(self, series_name, bucket):
+        topic = 'http_counts_' + series_name
         # Convert units to "hits per second" so they're understandable
         for k in bucket.keys():
             bucket[k] = bucket[k] / float(self.frequency.seconds)
 
         # For any newly encountered keys, add a fake 'empty' history.
         for key in bucket:
-            if key not in self.history:
-                self.history[key] = self._make_empty_hist()
+            if key not in self.history[series_name]:
+                self.history[series_name][key] = self._make_empty_hist()
 
         # Add up a 'total' key for all keys in the current bucket.
         bucket[AGGREGATE] = sum(bucket.values())
 
         # Remove the oldest element in each history and add a 'zero'
-        for key in self.history.keys():
-            self.history[key] = self.history[key][1:] + [0]
+        for key in self.history[series_name].keys():
+            self.history[series_name][key] = self.history[series_name][key][1:] + [0]
 
         # Add the new bucket items to their histories
         for key in bucket.keys():
-            self.history[key][-1] = bucket[key]
+            self.history[series_name][key][-1] = bucket[key]
 
         # Convert from convenient 'self.history' internal repr to flot json
         json = {'data':[]}
-        for key, series in self.history.iteritems():
+        for key, series in self.history[series_name].iteritems():
 
             if key == AGGREGATE:
                 continue
@@ -131,36 +143,37 @@ class TimeSeriesProducer(PollingProducer):
                 'data' : self.add_timestamps(series),
                 'lines': {
                     'show': 'true',
-                    'fill': 'true',
+                    'fill': 'false',
                 },
                 'label': key
             })
 
-        self.send_message(self.topic, [json])
-
+        self.send_message(topic, [json])
 
 
 class TimeSeriesConsumer(Consumer):
-    topic = 'httpdlight_http_rawlogs'
-    jsonify = False
+    topic = 'http_latlon'
+    jsonify = True
 
     def consume(self, message):
+        """ Drop message metrics about country and filename into a bucket """
         if not message:
             return
 
-        words = message.body.split()
-        ip, location = words[0], words[6]
+        msg = message['body']
 
-        if not '/' in location:
-            return
+        country = msg['country']
+        _pump_bucket('country', country)
 
-        key = '(parsing error)'
-        try:
-            key = location.split('/')[1]
-        except IndexError as e:
-            pass
+        filename = msg['filename']
+        if '/' in filename:
+            key = '(parsing error)'
+            try:
+                key = filename.split('/')[1]
+            except IndexError as e:
+                pass
 
-        _pump_bucket(key)
+            _pump_bucket('filename', key)
 
 class HttpLightConsumer(Consumer):
     app = 'narcissus' # this connects our ``self.DBSession``
@@ -208,7 +221,7 @@ class HttpLightConsumer(Consumer):
                     'country'       : rec.get('country_name', 'undefined'),
                     'logdatetime'   : log_date,
                     'requesttype'   : regex_result.group(5),
-                    'filenamehash'  : md5(regex_result.group(6)).hexdigest(),
+                    'filename'      : regex_result.group(6),
                     'httptype'      : regex_result.group(7),
                     'statuscode'    : regex_result.group(8),
                     'filesize'      : regex_result.group(9),

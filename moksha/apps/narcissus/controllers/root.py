@@ -34,8 +34,18 @@ class NarcissusController(Controller):
     @with_moksha_socket
     @with_menu
     @with_ui_theme
-    def plot(self, *args, **kw):
-        tmpl_context.widget = moksha.utils.get_widget('narc_plot')
+    def countries(self, *args, **kw):
+        tmpl_context.widget = moksha.utils.get_widget('narc_plot')(
+            topic='http_counts_country')
+        return dict(options={})
+
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
+    def filenames(self, *args, **kw):
+        tmpl_context.widget = moksha.utils.get_widget('narc_plot')(
+            topic='http_counts_filename')
         return dict(options={})
 
     @expose('mako:moksha.apps.narcissus.templates.widget')
