@@ -185,6 +185,7 @@ class HttpLightConsumer(Consumer):
             # Get IP 2 LatLon info
             rec = self.gi.record_by_addr(regex_result.group(1))
             if rec and rec['latitude'] and rec['longitude']:
+
                 # Strip the timezone from the logged timestamp.  Python can't
                 # parse it.
                 no_timezone = regex_result.group(4).split(" ")[0]
@@ -198,6 +199,7 @@ class HttpLightConsumer(Consumer):
                     'ip'            : regex_result.group(1),
                     'lat'           : rec['latitude'],
                     'lon'           : rec['longitude'],
+                    'country'       : rec.get('country_name', 'undefined'),
                     'logdatetime'   : log_date,
                     'requesttype'   : regex_result.group(5),
                     'filenamehash'  : md5(regex_result.group(6)).hexdigest(),

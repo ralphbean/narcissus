@@ -14,6 +14,7 @@ class ServerHit(DeclarativeBase):
     ip = Column(String(40))
     lat = Column(Float)
     lon = Column(Float)
+    country = Column(String(128))
     logdatetime = Column(DateTime, default=datetime.datetime.now)
     filesize = Column(Float)
     bytesin = Column(Float)
