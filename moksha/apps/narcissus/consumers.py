@@ -142,8 +142,8 @@ class TimeSeriesProducer(PollingProducer):
             json['data'].append({
                 'data' : self.add_timestamps(series),
                 'lines': {
-                    'show': 'true',
-                    'fill': 'false',
+                    'show': True,
+                    'fill': False,
                 },
                 'label': key
             })
