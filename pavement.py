@@ -36,11 +36,12 @@ options(
             "zope.sqlalchemy",
             "decorator",
             "ansi2html>=0.6.0",
-            "tw2.polymaps>=0.1a3",
-            "tw2.jqplugins.jqplot",
             "geojson",
             "pygeoip",
+            "tw2.polymaps>=0.1a3",
+            "tw2.jqplugins.jqplot",
             "tw2.slideymenu>=2.0b1",
+            "tw2.rrd",
         ],
         entry_points={
             'moksha.root' : (
