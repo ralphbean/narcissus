@@ -98,7 +98,7 @@ class NarcissusController(Controller):
         tmpl_context.widget = tw2.rrd.RRDJitAreaChart(
             id='some_id',
             rrd_filenames=get_rrd_filenames(category),
-            timedelta=datetime.timedelta(hours=12),
+            timedelta=datetime.timedelta(hours=2),
             width="900px",
             height="700px",
             offset=0,
