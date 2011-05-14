@@ -3,7 +3,6 @@ from moksha.lib.base import Controller
 
 from sqlalchemy.sql.expression import between
 
-from datetime import datetime, timedelta
 
 from moksha.apps.narcissus.decorators import (
     with_moksha_socket,
@@ -37,7 +36,7 @@ def readme_as_html():
         return docutils.examples.html_body(unicode(readme))
 
 def iplatloncreate():
-    tmpdate=datetime.now()-timedelta(seconds=1)
+    tmpdate=datetime.datetime.now()-datetime.timedelta(seconds=1)
     serverhits=m.ServerHit.query.filter(m.ServerHit.insdatetime>=session.get('datetime',tmpdate)).limit(3000).all()
     if 'datetime' in session:
         session['oldolddatetime'] = session.get('olddatetime')
