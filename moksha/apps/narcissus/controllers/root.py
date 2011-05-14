@@ -10,11 +10,19 @@ from moksha.apps.narcissus.decorators import (
     with_ui_theme,
     with_menu
 )
+import moksha.apps.narcissus.consumers
+import moksha.utils
+
+# TODO -- this should be moved to its own controller
+import tw2.rrd
+import tw2.core
+
+import kmlcircle
 
 import docutils.examples
+import datetime
+import os
 
-import moksha.utils
-import kmlcircle
 import logging
 log = logging.getLogger(__name__)
 import moksha.apps.narcissus.model as m
@@ -55,6 +63,12 @@ def iplatlondel():
             yield {
                 'del': '<Placemark targetId="A'+str(row.id)+'"></Placemark>'
             }
+
+# TODO -- this should be moved to its own controller
+def get_rrd_filenames(category):
+    basedir = moksha.apps.narcissus.consumers.rrd_dir + '/' + category + '/'
+    files = os.listdir(basedir)
+    return [basedir + f for f in files]
 
 class NarcissusController(Controller):
 
@@ -115,3 +129,78 @@ class NarcissusController(Controller):
     @expose('genshi:moksha.apps.narcissus.templates.google')
     def google(self, *args, **kw):
         return dict()
+
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
+    def history(self, category, **kw):
+        """ Static history graphs. """
+
+        # TODO -- get these categories from a tg config
+        if category not in ['country', 'filename']:
+            redirect('/history/filename')
+
+        tmpl_context.widget = tw2.rrd.RRDJitAreaChart(
+            id='some_id',
+            rrd_filenames=get_rrd_filenames(category),
+            timedelta=datetime.timedelta(hours=2),
+            width="900px",
+            height="700px",
+            offset=0,
+            showAggregates=False,
+            showLabels=False,
+            Label = {
+                'size': 15,
+                'family': 'Arial',
+                'color': 'white'
+            },
+            Tips = {
+                'enable': True,
+                'onShow' : tw2.core.JSSymbol(src="""
+                (function(tip, elem) {
+                    tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value +
+                                        " hits per second.";
+                })""")
+            }
+        )
+
+        return dict(options={})
+
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
+    def summary(self, category, **kw):
+        # TODO -- get these categories from a tg config
+        if category not in ['country', 'filename']:
+            redirect('/summary/filename')
+
+        tmpl_context.widget = tw2.rrd.RRDProtoBarChart(
+            id='some_id',
+            rrd_filenames=get_rrd_filenames(category),
+            timedelta=datetime.timedelta(hours=2),
+            p_height=700,
+            p_width=900,
+        )
+        return dict(options={})
+
+    # TODO -- this guy is really broken.  Don't use him.  :)
+    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
+    def stream(self, category, **kw):
+        # TODO -- get these categories from a tg config
+        if category not in ['country', 'filename']:
+            redirect('/stream/filename')
+
+        tmpl_context.widget = tw2.rrd.RRDStreamGraph(
+            id='some_id',
+            rrd_filenames=get_rrd_filenames(category),
+            timedelta=datetime.timedelta(hours=2),
+            p_height=700,
+            p_width=900,
+        )
+        return dict(options={})
+

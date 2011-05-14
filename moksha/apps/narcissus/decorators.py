@@ -14,16 +14,28 @@ def with_menu(f, *args, **kw):
         id='awesome-menu',
         items=[
             {
-                'label' : 'Map',
+                'label' : 'Map (live)',
                 'href' : '/map',
+#            },{
+#                'label' : 'Files (live)',
+#                'href' : '/filenames',
+#            },{
+#                'label' : 'Countries (live)',
+#                'href' : '/countries',
             },{
-                'label' : 'Files',
-                'href' : '/filenames',
+                'label' : 'Files (summary)',
+                'href' : '/summary/filename',
             },{
-                'label' : 'Countries',
-                'href' : '/countries',
+                'label' : 'Countries (summ)',
+                'href' : '/summary/country',
+#            },{
+#                'label' : 'Files (history)',
+#                'href' : '/history/filename',
+#            },{
+#                'label' : 'Countries (hist)',
+#                'href' : '/history/country',
             },{
-                'label' : 'Logs',
+                'label' : 'Logs (live)',
                 'href' : '/logs',
             },{
                 'label' : 'About',

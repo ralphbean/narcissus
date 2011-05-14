@@ -48,17 +48,29 @@ from datetime import timedelta, datetime
 from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
 from ansi2html import Ansi2HTMLConverter
+from pyrrd.rrd import DataSource, RRD, RRA
 
 import moksha.apps.narcissus.model as m
 
 import geojson
 import simplejson
 import threading
+import time
 import re
+import os
 
 
 import logging
 log = logging.getLogger(__name__)
+
+# A constant list of valid rrdtool categories.
+# TODO -- this should be moved to the config
+rrd_categories = ['country', 'filename']
+
+# Log pyrrd files to the current working directory.
+# TODO -- pull this from configuration
+rrd_dir = os.getcwd() + '/rrds'
+
 
 _bucket_lock = threading.Lock()
 _bucket = {}
@@ -83,17 +95,30 @@ def _pump_bucket(category, key):
 AGGREGATE = 'aggregate'
 
 class TimeSeriesProducer(PollingProducer):
+    """ PollingProducer responsible for building time-series.
+
+    :class:`TimeSeriesConsumer` is an asynchronous consumer that stuffs messages
+    it receives into the module-global thread-safe `_bucket`.
+
+    This producer wakes up every `frequency` seconds, dumps the contents of
+    `_bucket` out and processes the contents.  It is responsible for:
+
+        - Keeping track of a time series in-memory for streaming graph
+        - Logging data to rrdtool for posterity
+
+    """
+
     n_timesteps = 5
     frequency = timedelta(seconds=3)
     history = {}
-    series = ['filename', 'country']
     jsonify = True
 
     def __init__(self, *args, **kw):
         super(TimeSeriesProducer, self).__init__(*args, **kw)
+        self.rrdtool_setup()
         self.history = dict(
             [(name, {AGGREGATE : self._make_empty_hist()})
-             for name in self.series]
+             for name in rrd_categories]
         )
 
     def _make_empty_hist(self):
@@ -112,6 +137,11 @@ class TimeSeriesProducer(PollingProducer):
 
     def process_bucket(self, series_name, bucket):
         topic = 'http_counts_' + series_name
+
+        # Log to rrdtool
+        for k in bucket.keys():
+            self.rrdtool_log(bucket[k], series_name, k)
+
         # Convert units to "hits per second" so they're understandable
         for k in bucket.keys():
             bucket[k] = bucket[k] / float(self.frequency.seconds)
@@ -150,6 +180,65 @@ class TimeSeriesProducer(PollingProducer):
 
         self.send_message(topic, [json])
 
+    def rrdtool_setup(self):
+        """ Setup the rrdtool directory if this is the first run """
+
+        if not os.path.isdir(rrd_dir):
+            os.mkdir(rrd_dir)
+
+        for category in rrd_categories:
+            if not os.path.isdir(rrd_dir + '/' + category):
+                os.mkdir(rrd_dir + '/' + category)
+
+    def rrdtool_create(self, filename):
+        """ Create an rrdtool database if it doesn't exist """
+
+        sources = [
+            DataSource(
+                dsName='sum', dsType='GAUGE', heartbeat=100)
+        ]
+        archives = [
+            RRA(cf='AVERAGE', xff=0.5, steps=1, rows=24),
+            RRA(cf='AVERAGE', xff=0.5, steps=6, rows=10),
+        ]
+        rrd = RRD(filename, ds=sources, rra=archives, start=int(time.time()))
+        rrd.create()
+
+    def rrdtool_log(self, count, category, key):
+        """ Log a message to an category's corresponding rrdtool databse """
+
+        # rrdtool doesn't like spaces
+        key = key.replace(' ', '_')
+
+        filename = rrd_dir + '/' + category + '/' + key + '.rrd'
+
+        if not category in rrd_categories:
+            raise ValueError, "Invalid category %s" % category
+
+        if not os.path.isfile(filename):
+            self.rrdtool_create(filename)
+            # rrdtool complains if you stuff data into a freshly created
+            # database less than one second after you created it.  We could do a
+            # number of things to mitigate this:
+            #   - sleep for 1 second here
+            #   - return from this function and not log anything only on the
+            #     first time we see a new data key (a new country, a new
+            #     filename).
+            #   - pre-create our databases at startup based on magical knowledge
+            #     of what keys we're going to see coming over the AMQP line
+            #
+            # For now, we're just going to return.
+            return
+
+        # TODO -- Is this an expensive operation (opening the RRD)?  Can we make
+        # this happen less often?
+        rrd = RRD(filename)
+
+        rrd.bufferValue(str(int(time.time())), str(count))
+
+        # This flushes the values to file.
+        # TODO -- Can we make this happen less often?
+        rrd.update()
 
 class TimeSeriesConsumer(Consumer):
     topic = 'http_latlon'
@@ -162,8 +251,8 @@ class TimeSeriesConsumer(Consumer):
 
         msg = message['body']
 
-        country = msg['country']
-        _pump_bucket('country', country)
+        # TODO -- loop over rrd_categories with list of filter-callables
+        _pump_bucket('country', msg['country'])
 
         filename = msg['filename']
         if '/' in filename:
@@ -176,6 +265,16 @@ class TimeSeriesConsumer(Consumer):
             _pump_bucket('filename', key)
 
 class HttpLightConsumer(Consumer):
+    """ Main entry point of raw log messages.
+
+    Responsible for:
+
+        - Parsing raw logs
+        - Logging to sqlalchemy
+        - Sending parsed objects to other consumers
+
+    """
+
     app = 'narcissus' # this connects our ``self.DBSession``
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
@@ -189,6 +288,7 @@ class HttpLightConsumer(Consumer):
         super(HttpLightConsumer, self).__init__(*args, **kwargs)
 
     def consume(self, message):
+        """ Main entry point for messages from the log-sender """
         if not message:
             #self.log.warn("%r got empty message." % self)
             return
