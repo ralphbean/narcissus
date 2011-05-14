@@ -1,28 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<kml
-  xmlns="http://earth.google.com/kml/2.1"
-  xmlns:py="http://genshi.edgewall.org/"
-  >
-  <Folder>
-    <Style id="fireIcon">
-      <IconStyle>
-        <Icon>
-          <href>http://maps.google.com/mapfiles/kml/pal3/icon38.png</href>
-        </Icon>
-      </IconStyle>
-    </Style>
-    <Placemark py:for="item in collection">
-      <name py:content="item['name']">NAME</name>
-      <styleUrl>#fireIcon</styleUrl>
-      <description py:content="item['description']">
-        DESCRIPTION
-      </description>
-      <Point>
-        <coordinates py:content="item['coordinates']">
-          LONG,LAT
-        </coordinates>
-      </Point>
-    </Placemark>
-  </Folder>
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:py="http://genshi.edgewall.org/" >
+  <NetworkLinkControl>
+    <Update>
+      <targetHref>http://localhost:8080/kmlinit</targetHref>
+      <Create>
+        <Document targetId="narc">
+          <Placemark py:for="item in create" id="A${item['id']}">
+            <name py:content="item['name']">NAME</name>
+            <description py:content="item['description']">
+              DESCRIPTION
+            </description>
+            <Polygon py:replace="Markup(item['circle'])">PolyCircleCreate</Polygon>
+          </Placemark>
+        </Document>
+      </Create>
+        <py:for each="item in delete">
+        <Delete>
+        <Placemark py:replace="Markup(item['del'])">Place</Placemark>
+      </Delete>
+        </py:for>
+    </Update>
+  </NetworkLinkControl>
 </kml>
-
