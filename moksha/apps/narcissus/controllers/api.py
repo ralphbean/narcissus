@@ -10,14 +10,14 @@ import logging
 log = logging.getLogger(__name__)
 
 def iplatloncreate():
-    tmpdate=datetime.datetime.now()-datetime.timedelta(seconds=1)
-    serverhits=m.ServerHit.query.filter(m.ServerHit.insdatetime>=session.get('datetime',tmpdate)).limit(3000).all()
-    if 'datetime' in session:
-        session['oldolddatetime'] = session.get('olddatetime')
-        session['olddatetime'] = session.get('datetime')
-    else:
-        session['olddatetime'] = tmpdate
-    session['datetime'] = serverhits[-1].insdatetime
+    serverhits=m.ServerHit.query.filter(m.ServerHit.insdatetime>=(datetime.datetime.now()-datetime.timedelta(seconds=1))).limit(4000).all()
+    # If only google actually supported sessions! Darn them!
+    #if 'datetime' in session:
+    #    session['oldolddatetime'] = session.get('olddatetime')
+    #    session['olddatetime'] = session.get('datetime')
+    #else:
+    #    session['olddatetime'] = tmpdate
+    #session['datetime'] = serverhits[-1].insdatetime
     for row in serverhits:
         yield {
             'name': 'IP: %s' % row.ip,
@@ -27,15 +27,17 @@ def iplatloncreate():
             'id': row.id
             }
 
-    session.save()
+    #session.save()
 
 def iplatlondel():
-    if 'oldolddatetime' in session:
-        serverhits=m.ServerHit.query.filter(between(m.ServerHit.insdatetime,session.get('oldolddatetime'),session.get('olddatetime'))).limit(4000).all()
-        for row in serverhits:
-            yield {
-                'del': '<Placemark targetId="A'+str(row.id)+'"></Placemark>'
-            }
+# If only google actually supported sessions! Darn them!
+#    if 'oldolddatetime' in session:
+#        serverhits=m.ServerHit.query.filter(between(m.ServerHit.insdatetime,session.get('oldolddatetime'),session.get('olddatetime'))).limit(4000).all()
+    serverhits=m.ServerHit.query.filter(between(m.ServerHit.insdatetime,datetime.datetime.now()-datetime.timedelta(seconds=8),datetime.datetime.now()-datetime.timedelta(seconds=2))).all()
+    for row in serverhits:
+        yield {
+            'del': '<Placemark targetId="A'+str(row.id)+'"></Placemark>'
+        }
 
 class APIController(Controller):
 
