@@ -275,8 +275,9 @@ class TimeSeriesConsumer(Consumer):
         filename = msg['filename']
         if '/' in filename:
             # Does this file really exist?
-            if msg['statuscode'] is not '200':
-                self.log.warn('rejecting stuff with non-200 statuscode')
+            code = int(msg['statuscode'].strip())
+            if not (code >= 200 and code < 400):
+                #self.log.warn('rejecting "%s" .. "%s"' % (code, filename))
                 return
 
             key = '(parsing error)'
