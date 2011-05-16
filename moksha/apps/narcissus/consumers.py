@@ -71,6 +71,16 @@ rrd_categories = ['country', 'filename']
 # TODO -- pull this from configuration
 rrd_dir = os.getcwd() + '/rrds'
 
+def bobby_droptables(msg):
+    """ Return true if `msg` might be Bobby's cousin. """
+
+    dangerous_characters = [';', '<', '>', '&', '|']
+    for danger in dangerous_characters:
+        if danger in msg:
+            return True
+
+    return False
+
 
 _bucket_lock = threading.Lock()
 _bucket = {}
@@ -293,6 +303,12 @@ class HttpLightConsumer(Consumer):
             #self.log.warn("%r got empty message." % self)
             return
         #self.log.debug("%r got message '%r'" % (self, message))
+
+        # Look for dangerous injection stuff
+        if bobby_droptables(message.body):
+            self.log.warn("Bad message %s." % message)
+            return
+
         regex_result = self.llre.match(message.body)
         if regex_result and regex_result.group(1):
             # Get IP 2 LatLon info
@@ -372,6 +388,11 @@ class LogColorizer(Consumer):
 
     def consume(self, message):
         if not message:
+            return
+
+        # Look for dangerous injection stuff
+        if bobby_droptables(message.body):
+            self.log.warn("Bad message %s." % message)
             return
 
         # Pad the ip so the logs line up nice and straight.
