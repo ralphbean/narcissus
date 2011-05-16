@@ -44,6 +44,41 @@ class NarcissusController(Controller):
         'quarter' : datetime.timedelta(days=90),
         'year' : datetime.timedelta(days=365),
     }
+    charts = {
+        'history' : tw2.rrd.RRDJitAreaChart(
+            id='some_id',
+            width="900px",
+            height="700px",
+            offset=0,
+            showAggregates=False,
+            showLabels=False,
+            Label = {
+                'size': 15,
+                'family': 'Arial',
+                'color': 'white'
+            },
+            Tips = {
+                'enable': True,
+                'onShow' : tw2.core.JSSymbol(src="""
+                (function(tip, elem) {
+                    tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value +
+                                        " hits per second.";
+                })""")
+            }
+        ),
+        'summary' : tw2.rrd.RRDProtoBarChart(
+            id='some_id',
+            p_height=700,
+            p_width=900,
+        ),
+        'stream' : tw2.rrd.RRDStreamGraph(
+            id='some_id',
+            p_height=700,
+            p_width=900,
+        ),
+    }
+    # TODO -- get these categories from a tg config
+    categories = ['filename', 'country']
 
     @expose()
     def index(self, *args, **kw):
@@ -87,82 +122,26 @@ class NarcissusController(Controller):
     @with_moksha_socket
     @with_menu
     @with_ui_theme
-    def history(self, category, timespan, **kw):
-        """ Static history graphs. """
+    def chart(self, *args, **kw):
+        # Pad the arguments
+        args = list(args) + ['__none__']*4
+        chart, category, timespan = args[:3]
+        default_url = '/chart/{chart}/{category}/{timespan}'
 
-        # TODO -- get these categories from a tg config
-        if category not in ['country', 'filename']:
-            redirect('/history/filename')
+        if not chart in self.charts:
+            chart = 'summary'
+            redirect(default_url.format(**locals()))
 
-        if timespan not in self.timespans:
-            redirect('/history/{category}/hour'.format(category=category))
+        if not category in self.categories:
+            category = 'country'
+            redirect(default_url.format(**locals()))
 
-        tmpl_context.widget = tw2.rrd.RRDJitAreaChart(
-            id='some_id',
-            rrd_filenames=get_rrd_filenames(category),
+        if not timespan in self.timespans:
+            timespan = 'hour'
+            redirect(default_url.format(**locals()))
+
+        tmpl_context.widget = self.charts[chart](
             timedelta=self.timespans[timespan],
-            width="900px",
-            height="700px",
-            offset=0,
-            showAggregates=False,
-            showLabels=False,
-            Label = {
-                'size': 15,
-                'family': 'Arial',
-                'color': 'white'
-            },
-            Tips = {
-                'enable': True,
-                'onShow' : tw2.core.JSSymbol(src="""
-                (function(tip, elem) {
-                    tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value +
-                                        " hits per second.";
-                })""")
-            }
-        )
-
-        return dict(options={})
-
-    @expose('mako:moksha.apps.narcissus.templates.widget')
-    @with_moksha_socket
-    @with_menu
-    @with_ui_theme
-    def summary(self, category, timespan, **kw):
-        # TODO -- get these categories from a tg config
-        if category not in ['country', 'filename']:
-            redirect('/summary/filename')
-
-        if timespan not in self.timespans:
-            redirect('/summary/{category}/hour'.format(category=category))
-
-        tmpl_context.widget = tw2.rrd.RRDProtoBarChart(
-            id='some_id',
             rrd_filenames=get_rrd_filenames(category),
-            timedelta=self.timespans[timespan],
-            p_height=700,
-            p_width=900,
         )
         return dict(options={})
-
-    # TODO -- this guy is really broken.  Don't use him.  :)
-    @expose('mako:moksha.apps.narcissus.templates.widget')
-    @with_moksha_socket
-    @with_menu
-    @with_ui_theme
-    def stream(self, category, **kw):
-        # TODO -- get these categories from a tg config
-        if category not in ['country', 'filename']:
-            redirect('/stream/filename')
-
-        if timespan not in self.timespans:
-            redirect('/summary/{category}/hour'.format(category=category))
-
-        tmpl_context.widget = tw2.rrd.RRDStreamGraph(
-            id='some_id',
-            rrd_filenames=get_rrd_filenames(category),
-            timedelta=self.timespans[timespan],
-            p_height=700,
-            p_width=900,
-        )
-        return dict(options={})
-
