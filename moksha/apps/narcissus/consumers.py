@@ -202,14 +202,23 @@ class TimeSeriesProducer(PollingProducer):
     def rrdtool_create(self, filename):
         """ Create an rrdtool database if it doesn't exist """
 
+        # Our hearbeat is twice the step interval.
+        step = 15
+        heartbeat = 8*step
+
         sources = [
             DataSource(
-                dsName='sum', dsType='GAUGE', heartbeat=100)
+                dsName='sum', dsType='GAUGE', heartbeat=heartbeat)
         ]
+
         archives = [
-            RRA(cf='AVERAGE', xff=0.5, steps=1, rows=24),
-            RRA(cf='AVERAGE', xff=0.5, steps=6, rows=10),
+            RRA(cf='AVERAGE', xff=0.5, steps=1, rows=244),
+            RRA(cf='AVERAGE', xff=0.5, steps=24, rows=244),
+            RRA(cf='AVERAGE', xff=0.5, steps=168, rows=244),
+            RRA(cf='AVERAGE', xff=0.5, steps=672, rows=244),
+            RRA(cf='AVERAGE', xff=0.5, steps=5760, rows=374),
         ]
+
         rrd = RRD(filename, ds=sources, rra=archives, start=int(time.time()))
         rrd.create()
 
