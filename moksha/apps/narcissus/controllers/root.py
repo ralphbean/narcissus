@@ -37,6 +37,13 @@ def get_rrd_filenames(category):
     return [basedir + f for f in files]
 
 class NarcissusController(Controller):
+    timespans = {
+        'hour' : datetime.timedelta(hours=1),
+        'day' : datetime.timedelta(days=1),
+        'month' : datetime.timedelta(days=31),
+        'quarter' : datetime.timedelta(days=90),
+        'year' : datetime.timedelta(days=365),
+    }
 
     @expose()
     def index(self, *args, **kw):
@@ -80,17 +87,20 @@ class NarcissusController(Controller):
     @with_moksha_socket
     @with_menu
     @with_ui_theme
-    def history(self, category, **kw):
+    def history(self, category, timespan, **kw):
         """ Static history graphs. """
 
         # TODO -- get these categories from a tg config
         if category not in ['country', 'filename']:
             redirect('/history/filename')
 
+        if timespan not in self.timespans:
+            redirect('/history/{category}/hour'.format(category=category))
+
         tmpl_context.widget = tw2.rrd.RRDJitAreaChart(
             id='some_id',
             rrd_filenames=get_rrd_filenames(category),
-            timedelta=datetime.timedelta(hours=1),
+            timedelta=self.timespans[timespan],
             width="900px",
             height="700px",
             offset=0,
@@ -117,15 +127,18 @@ class NarcissusController(Controller):
     @with_moksha_socket
     @with_menu
     @with_ui_theme
-    def summary(self, category, **kw):
+    def summary(self, category, timespan, **kw):
         # TODO -- get these categories from a tg config
         if category not in ['country', 'filename']:
             redirect('/summary/filename')
 
+        if timespan not in self.timespans:
+            redirect('/summary/{category}/hour'.format(category=category))
+
         tmpl_context.widget = tw2.rrd.RRDProtoBarChart(
             id='some_id',
             rrd_filenames=get_rrd_filenames(category),
-            timedelta=datetime.timedelta(hours=2),
+            timedelta=self.timespans[timespan],
             p_height=700,
             p_width=900,
         )
@@ -141,10 +154,13 @@ class NarcissusController(Controller):
         if category not in ['country', 'filename']:
             redirect('/stream/filename')
 
+        if timespan not in self.timespans:
+            redirect('/summary/{category}/hour'.format(category=category))
+
         tmpl_context.widget = tw2.rrd.RRDStreamGraph(
             id='some_id',
             rrd_filenames=get_rrd_filenames(category),
-            timedelta=datetime.timedelta(hours=2),
+            timedelta=self.timespans[timespan],
             p_height=700,
             p_width=900,
         )
