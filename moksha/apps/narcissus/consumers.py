@@ -317,11 +317,6 @@ class HttpLightConsumer(Consumer):
             return
         #self.log.debug("%r got message '%r'" % (self, message))
 
-        # Look for dangerous injection stuff
-        if bobby_droptables(message.body):
-            self.log.warn("Bad message %s." % message)
-            return
-
         regex_result = self.llre.match(message.body)
         if regex_result and regex_result.group(1):
             # Get IP 2 LatLon info
