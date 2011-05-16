@@ -34,9 +34,9 @@ def with_menu(f, *args, **kw):
 #            },{
 #                'label' : 'Countries (hist)',
 #                'href' : '/history/country',
-            },{
-                'label' : 'Logs (live)',
-                'href' : '/logs',
+#            },{
+#                'label' : 'Logs (live)',
+#                'href' : '/logs',
             },{
                 'label' : 'About',
                 'href' : '/about',

@@ -52,14 +52,12 @@ options(
             ),
             'moksha.consumer': (
                 'httpdlight = moksha.apps.narcissus.consumers:HttpLightConsumer',
-                'colorizer  = moksha.apps.narcissus.consumers:LogColorizer',
                 'latlon2geo = moksha.apps.narcissus.consumers:LatLon2GeoJsonConsumer',
                 'series_con = moksha.apps.narcissus.consumers:TimeSeriesConsumer',
             ),
             'moksha.widget': (
                 'narc_map = moksha.widgets.narcissus.widgets:NarcissusMapWidget',
                 'narc_plot = moksha.widgets.narcissus.widgets:NarcissusPlotWidget',
-                'narc_logs = moksha.widgets.narcissus.widgets:NarcissusLogsWidget',
             ),
             'moksha.connector': (
                 'narcissus = moksha.apps.narcissus.connector:NarcissusConnector'

@@ -68,14 +68,6 @@ class NarcissusController(Controller):
         tmpl_context.widget = moksha.utils.get_widget('narc_map')
         return dict(options={})
 
-    @expose('mako:moksha.apps.narcissus.templates.widget')
-    @with_moksha_socket
-    @with_menu
-    @with_ui_theme
-    def logs(self, *args, **kw):
-        tmpl_context.widget = moksha.utils.get_widget('narc_logs')
-        return dict(options={})
-
     @expose('mako:moksha.apps.narcissus.templates.about')
     @with_moksha_socket
     @with_menu
