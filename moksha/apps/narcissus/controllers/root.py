@@ -1,24 +1,19 @@
 from tg import expose, validate, tmpl_context, redirect, session
 from moksha.lib.base import Controller
 
-from sqlalchemy.sql.expression import between
-
-
 from moksha.apps.narcissus.decorators import (
     with_moksha_socket,
     with_ui_theme,
     with_menu
 )
+from moksha.apps.narcissus.controllers.api import APIController
 import moksha.apps.narcissus.consumers
 import moksha.widgets.narcissus.widgets as widgets
 import moksha.utils
 
-
 import tw2.core
 import tw2.rrd
 import tw2.jqplugins.ui
-
-import kmlcircle
 
 import docutils.examples
 import datetime
@@ -26,7 +21,6 @@ import os
 
 import logging
 log = logging.getLogger(__name__)
-import moksha.apps.narcissus.model as m
 
 def readme_as_html():
     """ Ridiculous """
@@ -37,34 +31,6 @@ def readme_as_html():
         readme = readme.split('.. split here')[1]
         return docutils.examples.html_body(unicode(readme))
 
-def iplatloncreate():
-    tmpdate=datetime.datetime.now()-datetime.timedelta(seconds=1)
-    serverhits=m.ServerHit.query.filter(m.ServerHit.insdatetime>=session.get('datetime',tmpdate)).limit(3000).all()
-    if 'datetime' in session:
-        session['oldolddatetime'] = session.get('olddatetime')
-        session['olddatetime'] = session.get('datetime')
-    else:
-        session['olddatetime'] = tmpdate
-    session['datetime'] = serverhits[-1].insdatetime
-    for row in serverhits:
-        yield {
-            'name': 'IP: %s' % row.ip,
-            'description': 'Bytes: %s' % row.bytesout,
-            'circle': kmlcircle.kml_regular_polygon(row.lon,row.lat,
-                                                    kmlcircle.log(row.bytesout)*1000),
-            'id': row.id
-            }
-
-    session.save()
-
-def iplatlondel():
-    if 'oldolddatetime' in session:
-        serverhits=m.ServerHit.query.filter(between(m.ServerHit.insdatetime,session.get('oldolddatetime'),session.get('olddatetime'))).limit(4000).all()
-        for row in serverhits:
-            yield {
-                'del': '<Placemark targetId="A'+str(row.id)+'"></Placemark>'
-            }
-
 # TODO -- this should be moved to its own controller
 def get_rrd_filenames(category):
     basedir = moksha.apps.narcissus.consumers.rrd_dir + '/' + category + '/'
@@ -72,6 +38,12 @@ def get_rrd_filenames(category):
     return [basedir + f for f in files]
 
 class NarcissusController(Controller):
+    """ Main controller """
+
+    # Mounting sub-controllers
+    api = APIController()
+
+    # Constants
     timespans = {
         'hour' : datetime.timedelta(hours=1),
         'day' : datetime.timedelta(days=1),
@@ -230,16 +202,4 @@ function(e) {
                 rrd_filenames=get_rrd_filenames(category),
             ),
         ]
-        return dict()
-
-    @expose('genshi:moksha.apps.narcissus.templates.kml')
-    def kml(self, *args, **kw):
-        return dict(create=iplatloncreate(),delete=iplatlondel())
-
-    @expose('genshi:moksha.apps.narcissus.templates.kmlinit')
-    def kmlinit(self, *args, **kw):
-        return dict()
-
-    @expose('genshi:moksha.apps.narcissus.templates.google')
-    def google(self, *args, **kw):
         return dict()

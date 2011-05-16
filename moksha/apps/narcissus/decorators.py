@@ -28,6 +28,9 @@ def with_menu(f, *args, **kw):
             },{
                 'label' : 'Charts',
                 'href' : '/chart',
+            }, {
+                'label' : 'KML API',
+                'href' : '/api/google'
             },{
                 'label' : 'About',
                 'href' : '/about',
