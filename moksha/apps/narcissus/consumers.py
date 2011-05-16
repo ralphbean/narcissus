@@ -81,7 +81,6 @@ def bobby_droptables(msg):
 
     return False
 
-
 _bucket_lock = threading.Lock()
 _bucket = {}
 def _dump_bucket():
@@ -266,6 +265,11 @@ class TimeSeriesConsumer(Consumer):
 
         filename = msg['filename']
         if '/' in filename:
+            # Does this file really exist?
+            if msg['statuscode'] is not '200':
+                self.log.warn('rejecting stuff with non-200 statuscode')
+                return
+
             key = '(parsing error)'
             try:
                 key = filename.split('/')[1]
