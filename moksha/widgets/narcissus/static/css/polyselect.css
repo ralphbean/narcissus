@@ -1,0 +1,24 @@
+#buttonset_charts\:wrapper {
+        float:left;
+        margin-right: 10px;
+}
+#buttonset_charts > label {
+        height: 25px;
+        font-size: 75%;
+}
+#buttonset_categories\:wrapper {
+        float:left;
+        margin-left: 10px;
+        margin-right: 10px;
+}
+#buttonset_categories > label {
+        height: 25px;
+        font-size: 75%;
+}
+#buttonset_timespans\:wrapper {
+        margin-left: 10px;
+}
+#buttonset_timespans > label {
+        height: 25px;
+        font-size: 75%;
+}

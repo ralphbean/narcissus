@@ -67,3 +67,6 @@ class NarcissusLogsWidget(LiveWidget):
     topic = 'http_colorlogs'
     onmessage = "addLogMessage('${id}', eval(json))"
     template = "mako:moksha.widgets.narcissus.templates.logs"
+
+polyselect_css = twc.CSSLink(modname=__name__,
+                             filename='static/css/polyselect.css')

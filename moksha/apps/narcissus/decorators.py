@@ -22,21 +22,12 @@ def with_menu(f, *args, **kw):
 #            },{
 #                'label' : 'Countries (live)',
 #                'href' : '/countries',
-            },{
-                'label' : 'Files (summary)',
-                'href' : '/summary/filename',
-            },{
-                'label' : 'Countries (summ)',
-                'href' : '/summary/country',
-#            },{
-#                'label' : 'Files (history)',
-#                'href' : '/history/filename',
-#            },{
-#                'label' : 'Countries (hist)',
-#                'href' : '/history/country',
 #            },{
 #                'label' : 'Logs (live)',
 #                'href' : '/logs',
+            },{
+                'label' : 'Charts',
+                'href' : '/chart',
             },{
                 'label' : 'About',
                 'href' : '/about',

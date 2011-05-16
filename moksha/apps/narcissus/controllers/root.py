@@ -7,11 +7,13 @@ from moksha.apps.narcissus.decorators import (
     with_menu
 )
 import moksha.apps.narcissus.consumers
+import moksha.widgets.narcissus.widgets as widgets
 import moksha.utils
 
-# TODO -- this should be moved to its own controller
-import tw2.rrd
+
 import tw2.core
+import tw2.rrd
+import tw2.jqplugins.ui
 
 import docutils.examples
 import datetime
@@ -80,35 +82,81 @@ class NarcissusController(Controller):
     # TODO -- get these categories from a tg config
     categories = ['filename', 'country']
 
+    def __init__(self, *args, **kw):
+        super(NarcissusController, self).__init__(*args, **kw)
+        PolyButtonSet = tw2.jqplugins.ui.ButtonSetRadio(
+            resources=tw2.jqplugins.ui.ButtonSetRadio.resources +
+                [widgets.polyselect_css],
+            click="""
+function(e) {
+    var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
+    var category = $('input[name=buttonset_categories]:checked').attr('id').substr(3);
+    var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
+    window.location = '/chart/'+chart+'/'+category+'/'+timespan;
+}""",
+        )
+        self.buttonset_widgets = [
+            PolyButtonSet(
+                id='buttonset_charts',
+                items = [
+                    {'id' : 'rb_' + key, 'label' : key.title() }
+                    for key in self.charts.keys()
+                ],
+            ),
+            PolyButtonSet(
+                id='buttonset_categories',
+                items = [
+                    {'id' : 'rb_' + key, 'label' : key.title() }
+                    for key in self.categories
+                ],
+            ),
+            PolyButtonSet(
+                id='buttonset_timespans',
+                items = [
+                    {'id' : 'rb_' + key, 'label' : key.title() }
+                    for key, value in sorted(
+                        list(self.timespans.iteritems()),
+                        lambda x,y : cmp(x[1], y[1])
+                    )
+                ],
+            ),
+        ]
+
+
+
     @expose()
     def index(self, *args, **kw):
         redirect('/map')
 
-    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @expose('mako:moksha.apps.narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
     def countries(self, *args, **kw):
-        tmpl_context.widget = moksha.utils.get_widget('narc_plot')(
-            topic='http_counts_country')
-        return dict(options={})
+        tmpl_context.widgets = [
+            moksha.utils.get_widget('narc_plot')(topic='http_counts_country'),
+        ]
+        return dict()
 
-    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @expose('mako:moksha.apps.narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
     def filenames(self, *args, **kw):
-        tmpl_context.widget = moksha.utils.get_widget('narc_plot')(
-            topic='http_counts_filename')
-        return dict(options={})
+        tmpl_context.widgets = [
+            moksha.utils.get_widget('narc_plot')(topic='http_counts_filename'),
+        ]
+        return dict()
 
-    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @expose('mako:moksha.apps.narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
     def map(self, *args, **kw):
-        tmpl_context.widget = moksha.utils.get_widget('narc_map')
-        return dict(options={})
+        tmpl_context.widgets = [
+            moksha.utils.get_widget('narc_map'),
+        ]
+        return dict()
 
     @expose('mako:moksha.apps.narcissus.templates.about')
     @with_moksha_socket
@@ -118,7 +166,7 @@ class NarcissusController(Controller):
         tmpl_context.readme = readme_as_html()
         return dict(option={})
 
-    @expose('mako:moksha.apps.narcissus.templates.widget')
+    @expose('mako:moksha.apps.narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
@@ -140,8 +188,15 @@ class NarcissusController(Controller):
             timespan = 'hour'
             redirect(default_url.format(**locals()))
 
-        tmpl_context.widget = self.charts[chart](
-            timedelta=self.timespans[timespan],
-            rrd_filenames=get_rrd_filenames(category),
-        )
-        return dict(options={})
+        buttonsets = self.buttonset_widgets
+        buttonsets[0] = buttonsets[0](checked_item='rb_' + chart)
+        buttonsets[1] = buttonsets[1](checked_item='rb_' + category)
+        buttonsets[2] = buttonsets[2](checked_item='rb_' + timespan)
+
+        tmpl_context.widgets = buttonsets + [
+            self.charts[chart](
+                timedelta=self.timespans[timespan],
+                rrd_filenames=get_rrd_filenames(category),
+            ),
+        ]
+        return dict()
