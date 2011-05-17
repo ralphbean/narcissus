@@ -58,7 +58,10 @@ class NarcissusController(Controller):
             width="900px",
             height="700px",
             offset=0,
-            showAggregates=False,
+            showAggregates=tw2.core.JSSymbol(src="""
+                function(t, current, next, obj) {
+                    return current.toFixed(1);
+                }"""),
             showLabels=False,
             Label = {
                 'size': 15,
@@ -69,7 +72,8 @@ class NarcissusController(Controller):
                 'enable': True,
                 'onShow' : tw2.core.JSSymbol(src="""
                 (function(tip, elem) {
-                    tip.innerHTML = "<b>" + elem.name + "</b>: " + elem.value +
+                    tip.innerHTML = "<b>" + elem.name + "</b>: " +
+                                        elem.value.toFixed(1) +
                                         " hits per second.";
                 })""")
             }
