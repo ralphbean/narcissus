@@ -47,6 +47,7 @@ class NarcissusController(Controller):
     timespans = {
         'hour' : datetime.timedelta(hours=1),
         'day' : datetime.timedelta(days=1),
+        'week' : datetime.timedelta(days=7),
         'month' : datetime.timedelta(days=31),
         'quarter' : datetime.timedelta(days=90),
         'year' : datetime.timedelta(days=365),
