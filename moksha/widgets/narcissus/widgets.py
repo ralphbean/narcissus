@@ -17,8 +17,7 @@ class NarcissusMapWidget(LiveWidget, PolyMap):
     topic = 'http_geojson'
     layer_lifetime = 1000
 
-    # TODO -- Yuck!  I shouldn't be using `eval()` here.  How should I do it?
-    onmessage ="addGeoJsonToPolymap('${id}',eval(json), %i)" % layer_lifetime
+    onmessage ="addGeoJsonToPolymap('${id}', json, %i)" % layer_lifetime
 
     zoom = 2.1
     center_latlon = {'lat': 35.8, 'lon' : -344.2}
@@ -65,7 +64,7 @@ class NarcissusLogsWidget(LiveWidget):
     ]
 
     topic = 'http_colorlogs'
-    onmessage = "addLogMessage('${id}', eval(json))"
+    onmessage = "addLogMessage('${id}', json)"
     template = "mako:moksha.widgets.narcissus.templates.logs"
 
 polyselect_css = twc.CSSLink(modname=__name__,
