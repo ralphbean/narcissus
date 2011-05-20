@@ -60,8 +60,8 @@ class NarcissusController(Controller):
             id='some_id',
             offset=0,
             showAggregates=tw2.core.JSSymbol(src="""
-                function(t, current, next, obj) {
-                    return current.toFixed(1);
+                function(name, left, right, node, acum) {
+                    return acum.toFixed(1);
                 }"""),
             showLabels=False,
             Label = {
