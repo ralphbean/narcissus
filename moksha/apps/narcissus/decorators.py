@@ -1,6 +1,6 @@
 from tg import tmpl_context
 import moksha.utils
-from tw2.slideymenu import MenuWidget
+from moksha.widgets.narcissus.widgets import NarcissusMenu
 from tw2.jqplugins.ui import set_ui_theme_name
 
 import decorator
@@ -10,32 +10,7 @@ def with_moksha_socket(f, *args, **kw):
     return f(*args, **kw)
 
 def with_menu(f, *args, **kw):
-    tmpl_context.menu_widget = MenuWidget(
-        id='awesome-menu',
-        items=[
-            {
-                'label' : 'Map (live)',
-                'href' : '/map',
-#            },{
-#                'label' : 'Files (live)',
-#                'href' : '/filenames',
-#            },{
-#                'label' : 'Countries (live)',
-#                'href' : '/countries',
-#            },{
-#                'label' : 'Logs (live)',
-#                'href' : '/logs',
-            },{
-                'label' : 'Charts',
-                'href' : '/chart',
-            }, {
-                'label' : 'KML API',
-                'href' : '/api/google'
-            },{
-                'label' : 'About',
-                'href' : '/about',
-            }
-        ])
+    tmpl_context.menu_widget = NarcissusMenu
     return f(*args, **kw)
 
 def with_ui_theme(f, *args, **kw):

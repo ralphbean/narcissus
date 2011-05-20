@@ -1,6 +1,7 @@
 from moksha.api.widgets.live import LiveWidget
 from tw2.polymaps import PolyMap
 from tw2.jqplugins.jqplot.base import dateAxisRenderer_js
+from tw2.slideymenu import MenuWidget
 
 from moksha.api.widgets.flot import LiveFlotWidget
 
@@ -9,6 +10,32 @@ import tw2.jquery
 
 import logging
 log = logging.getLogger(__name__)
+
+modal_js = twc.JSLink(modname=__name__,
+                      filename='static/js/modal.js')
+
+def loading_dialog(href):
+    return "javascript:loadingDialog('%s');" % href
+
+class NarcissusMenu(MenuWidget):
+    resources = MenuWidget.resources + [modal_js]
+    id='awesome-menu'
+    items=[
+        {
+            'label' : 'Map (live)',
+            'href' : loading_dialog('/map'),
+        },{
+            'label' : 'Charts',
+            'href' : loading_dialog('/chart'),
+        }, {
+            'label' : 'KML API',
+            'href' : loading_dialog('/api/google'),
+        },{
+            'label' : 'About',
+            'href' : loading_dialog('/about'),
+        }
+    ]
+
 
 green_css = twc.CSSLink(modname=__name__,
                         filename='static/css/custom_polymap.css')
