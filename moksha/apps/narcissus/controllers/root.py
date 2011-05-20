@@ -55,8 +55,6 @@ class NarcissusController(Controller):
     charts = {
         'history' : tw2.rrd.RRDJitAreaChart(
             id='some_id',
-            width="900px",
-            height="700px",
             offset=0,
             showAggregates=tw2.core.JSSymbol(src="""
                 function(t, current, next, obj) {
