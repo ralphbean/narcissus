@@ -43,6 +43,9 @@ class NarcissusController(Controller):
     # Mounting sub-controllers
     api = APIController()
 
+    # TODO -- these should be shared between the consumers rrd-creation
+    # timespans and here.
+
     # Constants
     timespans = {
         'hour' : datetime.timedelta(hours=1),
