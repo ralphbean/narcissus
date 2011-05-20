@@ -64,6 +64,11 @@ class NarcissusController(Controller):
                     return acum.toFixed(1);
                 }"""),
             showLabels=False,
+            # This won't work until Nico accepts my patch to thejit-proper
+            #showLabels=tw2.core.JSSymbol(src="""
+            #    function(name, left, right, node) {
+            #        return 'hai';
+            #    }"""),
             Label = {
                 'size': 15,
                 'family': 'Arial',
