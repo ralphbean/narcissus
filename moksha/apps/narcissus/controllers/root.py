@@ -43,6 +43,9 @@ class NarcissusController(Controller):
     # Mounting sub-controllers
     api = APIController()
 
+    # TODO -- these should be shared between the consumers rrd-creation
+    # timespans and here.
+
     # Constants
     timespans = {
         'hour' : datetime.timedelta(hours=1),
@@ -57,10 +60,15 @@ class NarcissusController(Controller):
             id='some_id',
             offset=0,
             showAggregates=tw2.core.JSSymbol(src="""
-                function(t, current, next, obj) {
-                    return current.toFixed(1);
+                function(name, left, right, node, acum) {
+                    return acum.toFixed(1);
                 }"""),
             showLabels=False,
+            # This won't work until Nico accepts my patch to thejit-proper
+            #showLabels=tw2.core.JSSymbol(src="""
+            #    function(name, left, right, node) {
+            #        return 'hai';
+            #    }"""),
             Label = {
                 'size': 15,
                 'family': 'Arial',
@@ -80,6 +88,17 @@ class NarcissusController(Controller):
             id='some_id',
             p_height=700,
             p_width=900,
+            hide_zeroes=True,
+            # Sort by total value
+            series_sorter = lambda self, x, y: -1 * cmp(
+                sum([d[1] for d in x['data']]),
+                sum([d[1] for d in y['data']])
+            )
+        ),
+        'bubble' : tw2.rrd.RRDProtoBubbleChart(
+            id='some_id',
+            p_height=700,
+            p_width=900,
         ),
         'stream' : tw2.rrd.RRDStreamGraph(
             id='some_id',
@@ -92,33 +111,22 @@ class NarcissusController(Controller):
 
     def __init__(self, *args, **kw):
         super(NarcissusController, self).__init__(*args, **kw)
-        PolyButtonSet = tw2.jqplugins.ui.ButtonSetRadio(
-            resources=tw2.jqplugins.ui.ButtonSetRadio.resources +
-                [widgets.polyselect_css],
-            click="""
-function(e) {
-    var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
-    var category = $('input[name=buttonset_categories]:checked').attr('id').substr(3);
-    var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
-    window.location = '/chart/'+chart+'/'+category+'/'+timespan;
-}""",
-        )
         self.buttonset_widgets = [
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_charts',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
                     for key in self.charts.keys()
                 ],
             ),
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_categories',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
                     for key in self.categories
                 ],
             ),
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_timespans',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }

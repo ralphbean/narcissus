@@ -6,7 +6,8 @@
       <Create>
         <Document targetId="narc">
           <Placemark py:for="item in create" id="A${item['id']}">
-            <name py:content="item['name']">NAME</name>
+          <name py:content="item['name']">NAME</name>
+              <styleUrl>#yellow</styleUrl>
             <description py:content="item['description']">
               DESCRIPTION
             </description>

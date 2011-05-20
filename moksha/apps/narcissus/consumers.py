@@ -202,24 +202,59 @@ class TimeSeriesProducer(PollingProducer):
     def rrdtool_create(self, filename):
         """ Create an rrdtool database if it doesn't exist """
 
-        # Our hearbeat is twice the step interval.
-        step = 15
-        heartbeat = 8*step
+        # Step interval for Primary Data Points (pdp)
+        pdp_step = self.frequency.seconds + (self.frequency.days * 86400)
 
+        # Heartbeat can be 'whatev', but twice the pdpd_step is good
+        heartbeat = 2 * pdp_step
+
+        # We only keep a single simple datasource.
         sources = [
             DataSource(
-                dsName='sum', dsType='GAUGE', heartbeat=heartbeat)
+                dsName='sum',
+                dsType='GAUGE',
+                heartbeat=heartbeat
+            )
         ]
 
+        # TODO -- this should be a user-definable number.  It is equivalent to
+        # "how many data points do I want to see on any one graph at any given
+        # time."  The higher it is, the cooler your graphs look.  The higher it
+        # is, the more disk space is consumed.  The higher it is, the more
+        # memory is consumed client-side.
+        target_resolution = 20
+
+        # This function calculates how many PDP steps should be involved in the
+        # calculation of a single Consolidated Data Point (CDP).
+        cdp_steps = lambda tspan : (tspan / pdp_step) / target_resolution
+
+        # Just a lookup of how many seconds per 'timespan'
+        timespans = {
+            'hour'      : 3600,
+            'day'       : 86400,
+            'week'      : 604800,
+            'month'     : 2629744,
+            'quarter'   : 7889231,
+            'year'      : 31556926,
+        }
+
+        self.log.info("Building rrd %s.  %i cdp steps per hour." % (
+            filename, cdp_steps(timespans['hour'])))
+
+        # Here we build a series of round robin Archives of various resolutions.
         archives = [
-            RRA(cf='AVERAGE', xff=0.5, steps=1, rows=244),
-            RRA(cf='AVERAGE', xff=0.5, steps=24, rows=244),
-            RRA(cf='AVERAGE', xff=0.5, steps=168, rows=244),
-            RRA(cf='AVERAGE', xff=0.5, steps=672, rows=244),
-            RRA(cf='AVERAGE', xff=0.5, steps=5760, rows=374),
-        ]
+            RRA(cf='AVERAGE', xff=0.5, rows=target_resolution,
+                steps=cdp_steps(seconds_per_timespan))
+            for name, seconds_per_timespan in timespans.iteritems()]
 
-        rrd = RRD(filename, ds=sources, rra=archives, start=int(time.time()))
+        # Actually build the round robin database from the parameters we built
+        rrd = RRD(
+            filename,
+            start=int(time.time()),
+            step=pdp_step,
+            ds=sources,
+            rra=archives,
+        )
         rrd.create()
 
     def rrdtool_log(self, count, category, key):
