@@ -88,6 +88,7 @@ class NarcissusController(Controller):
             id='some_id',
             p_height=700,
             p_width=900,
+            hide_zeroes=True,
             # Sort by total value
             series_sorter = lambda self, x, y: -1 * cmp(
                 sum([d[1] for d in x['data']]),
