@@ -41,7 +41,7 @@ options(
             "tw2.polymaps>=0.1a3",
             "tw2.jqplugins.jqplot",
             "tw2.slideymenu>=2.0b1",
-            "tw2.rrd>=2.0b7",
+            "tw2.rrd>=2.0b10",
             "tw2.jit>=0.3.0",
         ],
         entry_points={
