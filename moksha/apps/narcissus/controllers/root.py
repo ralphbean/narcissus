@@ -80,6 +80,16 @@ class NarcissusController(Controller):
             id='some_id',
             p_height=700,
             p_width=900,
+            # Sort by total value
+            series_sorter = lambda self, x, y: -1 * cmp(
+                sum([d[1] for d in x['data']]),
+                sum([d[1] for d in y['data']])
+            )
+        ),
+        'bubble' : tw2.rrd.RRDProtoBubbleChart(
+            id='some_id',
+            p_height=700,
+            p_width=900,
         ),
         'stream' : tw2.rrd.RRDStreamGraph(
             id='some_id',
