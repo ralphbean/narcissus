@@ -97,3 +97,15 @@ class NarcissusLogsWidget(LiveWidget):
 
 polyselect_css = twc.CSSLink(modname=__name__,
                              filename='static/css/polyselect.css')
+
+class PolyButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
+    resources = tw2.jqplugins.ui.ButtonSetRadio.resources + [polyselect_css]
+
+    click = """
+        function(e) {
+            var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
+            var category = $('input[name=buttonset_categories]:checked').attr('id').substr(3);
+            var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
+            href = '/chart/'+chart+'/'+category+'/'+timespan;
+            loadingDialog(href);
+        }"""

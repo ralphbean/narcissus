@@ -1,6 +1,6 @@
 function loadingDialog(href) {
         var $dialog = $('<div></div>')
-        .html('Making request.')
+        .html('Loading.')
         .dialog({
                 autoOpen: true,
                 title: 'Narcissus',

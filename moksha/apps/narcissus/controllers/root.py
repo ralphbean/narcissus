@@ -94,33 +94,22 @@ class NarcissusController(Controller):
 
     def __init__(self, *args, **kw):
         super(NarcissusController, self).__init__(*args, **kw)
-        PolyButtonSet = tw2.jqplugins.ui.ButtonSetRadio(
-            resources=tw2.jqplugins.ui.ButtonSetRadio.resources +
-                [widgets.polyselect_css],
-            click="""
-function(e) {
-    var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
-    var category = $('input[name=buttonset_categories]:checked').attr('id').substr(3);
-    var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
-    window.location = '/chart/'+chart+'/'+category+'/'+timespan;
-}""",
-        )
         self.buttonset_widgets = [
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_charts',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
                     for key in self.charts.keys()
                 ],
             ),
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_categories',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
                     for key in self.categories
                 ],
             ),
-            PolyButtonSet(
+            widgets.PolyButtonSet(
                 id='buttonset_timespans',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
