@@ -52,6 +52,7 @@ from pyrrd.rrd import DataSource, RRD, RRA
 
 import moksha.apps.narcissus.model as m
 
+import itertools
 import geojson
 import simplejson
 import threading
@@ -99,6 +100,9 @@ rrd_categories = [
 # TODO -- pull this from configuration
 rrd_dir = os.getcwd() + '/rrds'
 
+PAIRED = '__paired__'
+AGGREGATE = 'aggregate'
+
 
 def bobby_droptables(msg):
     """ Return true if `msg` might be Bobby's cousin. """
@@ -130,7 +134,25 @@ def _pump_bucket(category, key):
             _bucket[category] = {}
         _bucket[category][key] = _bucket[category].get(key, 0) + 1
 
-AGGREGATE = 'aggregate'
+def _pump_paired_bucket(cat1, cat2, key1, key2):
+    """ Increments `key1` by `key2` in `cat1` by `cat2`. """
+    global _bucket_lock
+    global _bucket
+    with _bucket_lock:
+        if not PAIRED in _bucket:
+            _bucket[PAIRED] = {}
+
+        if not cat1 in _bucket[PAIRED]:
+            _bucket[PAIRED][cat1] = {}
+
+        if not cat2 in _bucket[PAIRED][cat1]:
+            _bucket[PAIRED][cat1][cat2] = {}
+
+        if not key1 in _bucket[PAIRED][cat1][cat2]:
+            _bucket[PAIRED][cat1][cat2][key1] = {}
+
+        _bucket[PAIRED][cat1][cat2][key1][key2] = \
+                _bucket[PAIRED][cat1][cat2][key1].get(key2, 0) + 1
 
 class TimeSeriesProducer(PollingProducer):
     """ PollingProducer responsible for building time-series.
@@ -168,10 +190,18 @@ class TimeSeriesProducer(PollingProducer):
     def poll(self):
         __bucket = _dump_bucket()
         for key in __bucket.keys():
-            self.process_bucket(
-                series_name=key,
-                bucket=__bucket[key]
-            )
+            if key is PAIRED:
+                # TODO -- Unimplemented!!!
+                # Here we should store files in
+                #   ``rrds/__paired__/cat1/cat2/key1/key2.rrd``
+                # and send off the appropriate amqp stuff for any listening live
+                # widgets (of which there are as yet none).
+                pass
+            else:
+                self.process_bucket(
+                    series_name=key,
+                    bucket=__bucket[key]
+                )
 
     def process_bucket(self, series_name, bucket):
         topic = 'http_counts_' + series_name
@@ -342,6 +372,17 @@ class TimeSeriesConsumer(Consumer):
             key = key_extractors[category](message['body'])
             if key:
                 _pump_bucket(category, key)
+
+        for cat1, cat2 in itertools.product(rrd_categories, rrd_categories):
+            if cat1 == cat2:
+                # No point in pairing something with itself
+                continue
+
+            key1 = key_extractors[cat1](message['body'])
+            key2 = key_extractors[cat2](message['body'])
+            if key1 and key2:
+                _pump_paired_bucket(cat1, cat2, key1, key2)
+
 
 
 class HttpLightConsumer(Consumer):
