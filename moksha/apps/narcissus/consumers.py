@@ -63,13 +63,42 @@ import os
 import logging
 log = logging.getLogger(__name__)
 
+def _country_extractor(msg):
+    return msg['country']
+
+def _filename_extractor(msg):
+    filename = msg['filename']
+    if '/' not in filename:
+        return None
+
+    # Does this file really exist?
+    code = int(msg['statuscode'].strip())
+    if not (code >= 200 and code < 400):
+        return None
+
+    key = '(parsing error)'
+    try:
+        key = filename.split('/')[1]
+    except IndexError as e:
+        return None
+    return key
+
+key_extractors = {
+    'country' : _country_extractor,
+    'filename' : _filename_extractor,
+}
+
 # A constant list of valid rrdtool categories.
 # TODO -- this should be moved to the config
-rrd_categories = ['country', 'filename']
+rrd_categories = [
+    'country',
+    'filename',
+]
 
 # Log pyrrd files to the current working directory.
 # TODO -- pull this from configuration
 rrd_dir = os.getcwd() + '/rrds'
+
 
 def bobby_droptables(msg):
     """ Return true if `msg` might be Bobby's cousin. """
@@ -297,31 +326,6 @@ class TimeSeriesProducer(PollingProducer):
         # TODO -- Can we make this happen less often?
         rrd.update()
 
-
-def _country_extractor(msg):
-    return msg['country']
-
-def _filename_extractor(msg):
-    filename = msg['filename']
-    if '/' not in filename:
-        return None
-
-    # Does this file really exist?
-    code = int(msg['statuscode'].strip())
-    if not (code >= 200 and code < 400):
-        return None
-
-    key = '(parsing error)'
-    try:
-        key = filename.split('/')[1]
-    except IndexError as e:
-        return None
-    return key
-
-key_extractors = {
-    'country' : _country_extractor,
-    'filename' : _filename_extractor,
-}
 
 class TimeSeriesConsumer(Consumer):
     topic = 'http_latlon'
