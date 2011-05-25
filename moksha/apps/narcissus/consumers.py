@@ -222,7 +222,7 @@ class TimeSeriesProducer(PollingProducer):
         # time."  The higher it is, the cooler your graphs look.  The higher it
         # is, the more disk space is consumed.  The higher it is, the more
         # memory is consumed client-side.
-        target_resolution = 20
+        target_resolution = 60
 
         # This function calculates how many PDP steps should be involved in the
         # calculation of a single Consolidated Data Point (CDP).
