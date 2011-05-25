@@ -241,11 +241,15 @@ class TimeSeriesProducer(PollingProducer):
         self.log.info("Building rrd %s.  %i cdp steps per hour." % (
             filename, cdp_steps(timespans['hour'])))
 
-        # Here we build a series of round robin Archives of various resolutions.
-        archives = [
-            RRA(cf='AVERAGE', xff=0.5, rows=target_resolution,
-                steps=cdp_steps(seconds_per_timespan))
-            for name, seconds_per_timespan in timespans.iteritems()]
+        # Here we build a series of round robin Archives of various resolutions
+        # and consolidation functions
+        archives = []
+        for consolidation_function in ['AVERAGE', 'MAX']:
+            archives += [
+                RRA(cf=consolidation_function, xff=0.5, rows=target_resolution,
+                    steps=cdp_steps(seconds_per_timespan))
+                for name, seconds_per_timespan in timespans.iteritems()
+            ]
 
         # Actually build the round robin database from the parameters we built
         rrd = RRD(
