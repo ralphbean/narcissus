@@ -297,35 +297,48 @@ class TimeSeriesProducer(PollingProducer):
         # TODO -- Can we make this happen less often?
         rrd.update()
 
+
+def _country_extractor(msg):
+    return msg['country']
+
+def _filename_extractor(msg):
+    filename = msg['filename']
+    if '/' not in filename:
+        return None
+
+    # Does this file really exist?
+    code = int(msg['statuscode'].strip())
+    if not (code >= 200 and code < 400):
+        return None
+
+    key = '(parsing error)'
+    try:
+        key = filename.split('/')[1]
+    except IndexError as e:
+        return None
+    return key
+
+key_extractors = {
+    'country' : _country_extractor,
+    'filename' : _filename_extractor,
+}
+
 class TimeSeriesConsumer(Consumer):
     topic = 'http_latlon'
     jsonify = True
+
 
     def consume(self, message):
         """ Drop message metrics about country and filename into a bucket """
         if not message:
             return
 
-        msg = message['body']
+        for category in rrd_categories:
+            # key_extractors is a dict of callables
+            key = key_extractors[category](message['body'])
+            if key:
+                _pump_bucket(category, key)
 
-        # TODO -- loop over rrd_categories with list of filter-callables
-        _pump_bucket('country', msg['country'])
-
-        filename = msg['filename']
-        if '/' in filename:
-            # Does this file really exist?
-            code = int(msg['statuscode'].strip())
-            if not (code >= 200 and code < 400):
-                #self.log.warn('rejecting "%s" .. "%s"' % (code, filename))
-                return
-
-            key = '(parsing error)'
-            try:
-                key = filename.split('/')[1]
-            except IndexError as e:
-                pass
-
-            _pump_bucket('filename', key)
 
 class HttpLightConsumer(Consumer):
     """ Main entry point of raw log messages.
