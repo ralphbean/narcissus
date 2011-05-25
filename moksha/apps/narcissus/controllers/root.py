@@ -106,8 +106,6 @@ class NarcissusController(Controller):
             p_width=900,
         ),
     }
-    # TODO -- get these categories from a tg config
-    categories = ['filename', 'country']
 
     def __init__(self, *args, **kw):
         super(NarcissusController, self).__init__(*args, **kw)
@@ -123,7 +121,7 @@ class NarcissusController(Controller):
                 id='buttonset_categories',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
-                    for key in self.categories
+                    for key in moksha.apps.narcissus.consumers.rrd_categories
                 ],
             ),
             widgets.PolyButtonSet(
@@ -194,7 +192,7 @@ class NarcissusController(Controller):
             chart = 'summary'
             redirect(default_url.format(**locals()))
 
-        if not category in self.categories:
+        if not category in moksha.apps.narcissus.consumers.rrd_categories:
             category = 'country'
             redirect(default_url.format(**locals()))
 
