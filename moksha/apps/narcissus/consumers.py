@@ -191,17 +191,24 @@ class TimeSeriesProducer(PollingProducer):
         __bucket = _dump_bucket()
         for key in __bucket.keys():
             if key is PAIRED:
-                # TODO -- Unimplemented!!!
-                # Here we should store files in
-                #   ``rrds/__paired__/cat1/cat2/key1/key2.rrd``
-                # and send off the appropriate amqp stuff for any listening live
-                # widgets (of which there are as yet none).
-                pass
+                self.process_paired_bucket(__bucket[key])
             else:
                 self.process_bucket(
                     series_name=key,
                     bucket=__bucket[key]
                 )
+
+    def process_paired_bucket(self, paired):
+        for cat1 in paired.keys():
+            for cat2 in paired[cat1].keys():
+                for key1 in paired[cat1][cat2].keys():
+                    key2 = paired[cat1][cat2][key1]
+                    value = paired[cat1][cat2][key1][key2]
+                    self.rrdtool_paired_log(value, cat1, cat2, key1, key2)
+
+        # TODO -- As yet unimplemented!!!
+        # send off the appropriate amqp stuff for any listening live
+        # widgets (of which there are as yet none).
 
     def process_bucket(self, series_name, bucket):
         topic = 'http_counts_' + series_name
@@ -260,6 +267,11 @@ class TimeSeriesProducer(PollingProducer):
 
     def rrdtool_create(self, filename):
         """ Create an rrdtool database if it doesn't exist """
+
+        # Create the directory if it doesn't exist.
+        directory = '/'.join(filename.split('/')[:-1])
+        if not os.path.isdir(directory):
+            os.makedirs(directory)
 
         # Step interval for Primary Data Points (pdp)
         pdp_step = self.frequency.seconds + (self.frequency.days * 86400)
@@ -320,16 +332,39 @@ class TimeSeriesProducer(PollingProducer):
         )
         rrd.create()
 
+    def safe_key(self, key):
+        """ rrdtool doesn't like spaces """
+        return key.replace(' ', '_')
+
+    def rrdtool_log_paired(self, count, cat1, cat2, key1, key2):
+        """ Log a message to a rrdtool db dedicated to comparing attributes """
+
+        key1 = self.safe_key(key1)
+        key2 = self.safe_key(key2)
+
+        if cat1 not in rrd_categories:
+            raise ValueError, "Invalid category 1 %s" % cat1
+
+        if cat2 not in rrd_categories:
+            raise ValueError, "Invalid category 2 %s" % cat2
+
+        filename = "/".join([rrd_dir, PAIRED, cat1, cat2, key1, key2 + '.rrd'])
+        self._rrdtool_log(count, filename)
+
     def rrdtool_log(self, count, category, key):
         """ Log a message to an category's corresponding rrdtool databse """
 
-        # rrdtool doesn't like spaces
-        key = key.replace(' ', '_')
+        key = self.safe_key(key)
 
         filename = rrd_dir + '/' + category + '/' + key + '.rrd'
 
         if not category in rrd_categories:
             raise ValueError, "Invalid category %s" % category
+
+        self._rrdtool_log(count, filename)
+
+    def _rrdtool_log(self, count, filename):
+        """ Workhorse for rrdtool logging.  Shouldn't be called directly. """
 
         if not os.path.isfile(filename):
             self.rrdtool_create(filename)
