@@ -25,8 +25,11 @@ class NarcissusMenu(MenuWidget):
             'label' : 'Map (live)',
             'href' : loading_dialog('/map'),
         },{
-            'label' : 'Charts',
-            'href' : loading_dialog('/chart'),
+            'label' : 'Monovariate',
+            'href' : loading_dialog('/chart/mono'),
+        },{
+            'label' : 'Multivariate',
+            'href' : loading_dialog('/chart/multi'),
         }, {
             'label' : 'KML API',
             'href' : loading_dialog('/api/google'),
@@ -97,7 +100,7 @@ class NarcissusLogsWidget(LiveWidget):
 polyselect_css = twc.CSSLink(modname=__name__,
                              filename='static/css/polyselect.css')
 
-class PolyButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
+class PolyMonoButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
     resources = tw2.jqplugins.ui.ButtonSetRadio.resources + [polyselect_css]
 
     click = """
@@ -105,6 +108,23 @@ class PolyButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
             var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
             var category = $('input[name=buttonset_categories]:checked').attr('id').substr(3);
             var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
-            href = '/chart/'+chart+'/'+category+'/'+timespan;
+            href = '/chart/mono/'+chart+'/'+category+'/'+timespan;
+            loadingDialog(href);
+        }"""
+
+class PolyMultiButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
+    resources = tw2.jqplugins.ui.ButtonSetRadio.resources + [polyselect_css]
+
+    click = """
+        function(e) {
+            var chart = $('input[name=buttonset_charts]:checked').attr('id').substr(3);
+            var categories = $('input[name=buttonset_categories]:checked').attr('id').substr(5);
+            var timespan = $('input[name=buttonset_timespans]:checked').attr('id').substr(3);
+            console.log(categories);
+            var cats = categories.split('___');
+            var cat1 = cats[0];
+            var cat2 = cats[1];
+
+            href = '/chart/multi/'+chart+'/'+cat1+'/'+cat2+'/'+timespan;
             loadingDialog(href);
         }"""
