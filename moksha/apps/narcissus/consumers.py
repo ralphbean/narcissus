@@ -202,9 +202,9 @@ class TimeSeriesProducer(PollingProducer):
         for cat1 in paired.keys():
             for cat2 in paired[cat1].keys():
                 for key1 in paired[cat1][cat2].keys():
-                    key2 = paired[cat1][cat2][key1]
-                    value = paired[cat1][cat2][key1][key2]
-                    self.rrdtool_paired_log(value, cat1, cat2, key1, key2)
+                    for key2 in paired[cat1][cat2][key1].keys():
+                        value = paired[cat1][cat2][key1][key2]
+                        self.rrdtool_log_paired(value, cat1, cat2, key1, key2)
 
         # TODO -- As yet unimplemented!!!
         # send off the appropriate amqp stuff for any listening live
