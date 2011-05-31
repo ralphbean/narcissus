@@ -56,7 +56,7 @@ class NarcissusController(Controller):
         'year' : datetime.timedelta(days=365),
     }
     charts = {
-        'history' : tw2.rrd.RRDJitAreaChart(
+        'history' : tw2.rrd.FlatRRDJitAreaChart(
             id='some_id',
             offset=0,
             showAggregates=tw2.core.JSSymbol(src="""
@@ -84,7 +84,7 @@ class NarcissusController(Controller):
                 })""")
             }
         ),
-        'summary' : tw2.rrd.RRDProtoBarChart(
+        'summary' : tw2.rrd.FlatRRDProtoBarChart(
             id='some_id',
             p_height=700,
             p_width=900,
@@ -95,12 +95,12 @@ class NarcissusController(Controller):
                 sum([d[1] for d in y['data']])
             )
         ),
-        'bubble' : tw2.rrd.RRDProtoBubbleChart(
+        'bubble' : tw2.rrd.FlatRRDProtoBubbleChart(
             id='some_id',
             p_height=700,
             p_width=900,
         ),
-        'stream' : tw2.rrd.RRDStreamGraph(
+        'stream' : tw2.rrd.FlatRRDStreamGraph(
             id='some_id',
             p_height=700,
             p_width=900,
