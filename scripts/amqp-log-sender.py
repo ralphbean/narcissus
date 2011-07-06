@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+# TODO -- there's a bug where the watched file gets moved out from under
+# inotify.  We could address this with some pyinotify magic.
+#
+#   http://pyinotify.sourceforge.net/#The_EventsCodes_Class
+#
+# may need to watch IN_MOVE_* or something
+
 from qpid.connection import Connection
 from qpid.datatypes import Message, uuid4
 from qpid.util import connect
