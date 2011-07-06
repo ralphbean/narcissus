@@ -9,6 +9,9 @@ import optparse
 parser = optparse.OptionParser()
 parser.add_option("-t", "--targets", dest="targets", default="localhost",
                   help="comma-separated list of target hostnames running qpid")
+parser.add_option("-p", "--topic", dest="topic",
+                  default="httpdlight_http_rawlogs",
+                  help="amqp topic to talk on.")
 parser.add_option("-d", "--debug", dest="debug", action="store_true",
                   help="debug what messages are being sent")
 options, args = parser.parse_args()
@@ -28,7 +31,8 @@ for target in options.targets:
         session = connection.session(str(uuid4()))
 
         # Setup routing properties
-        properties = session.delivery_properties(routing_key='httpdlight_http_rawlogs')
+        print "Talking to %s on topic %s" % (target, options.topic)
+        properties = session.delivery_properties(routing_key=options.topic)
         session_dicts.append({
             'target' : target,
             'socket' : socket,
