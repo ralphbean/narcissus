@@ -155,7 +155,7 @@ def develop():
     """ `python setup.py develop` """
     ret = True
     ret = ret and not os.system('%s setup.py develop' % sys.executable)
-#    ret = ret and not os.system('%s setup.py install' % sys.executable)
+    ret = ret and not os.system('%s setup.py install' % sys.executable)
     return ret
 
 

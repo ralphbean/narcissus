@@ -18,7 +18,7 @@ setup(
     author_email="ralph.bean@gmail.com",
     rpm_name='narcissus',
     packages=find_packages(),
-    #package_data=find_package_data(),
+    include_package_data=True,
     namespace_packages=[
         'moksha',
         'moksha.apps',
@@ -54,6 +54,7 @@ setup(
         ),
         'moksha.widget': (
             'narc_map = moksha.widgets.narcissus.widgets:NarcissusMapWidget',
+            'narc_graph = moksha.widgets.narcissus.widgets:NarcissusGraphWidget',
             'narc_plot = moksha.widgets.narcissus.widgets:NarcissusPlotWidget',
         ),
         'moksha.connector': (

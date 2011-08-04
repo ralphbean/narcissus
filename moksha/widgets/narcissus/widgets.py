@@ -25,6 +25,9 @@ class NarcissusMenu(MenuWidget):
             'label' : 'Map (live)',
             'href' : loading_dialog('/map'),
         },{
+            'label' : 'Graph (live)',
+            'href' : loading_dialog('/graph'),
+        },{
             'label' : 'Monovariate',
             'href' : loading_dialog('/chart/mono'),
         },{
@@ -37,6 +40,27 @@ class NarcissusMenu(MenuWidget):
             'label' : 'About',
             'href' : loading_dialog('/about'),
         }
+    ]
+
+d3_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.min.js")
+d3_geom_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.geom.min.js")
+d3_layout_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.layout.min.js")
+
+graphwidget_js = twc.JSLink(modname=__name__, filename="static/js/graph.js")
+graphwidget_css = twc.CSSLink(modname=__name__, filename="static/css/graph.css")
+
+class NarcissusGraphWidget(LiveWidget):
+    template = "mako:moksha.widgets.narcissus.templates.graph"
+    topic = 'http_latlon'
+    onmessage = "make_connection(json['country'], json['filename'].split('/')[1])"
+
+    resources = LiveWidget.resources + [
+        tw2.jquery.jquery_js,
+        d3_js,
+        d3_geom_js,
+        d3_layout_js,
+        graphwidget_js,
+        graphwidget_css
     ]
 
 

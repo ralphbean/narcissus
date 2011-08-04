@@ -69,6 +69,16 @@ class NarcissusController(Controller):
         ]
         return dict()
 
+    @expose('mako:moksha.apps.narcissus.templates.widgets')
+    @with_moksha_socket
+    @with_menu
+    @with_ui_theme
+    def graph(self, *args, **kw):
+        tmpl_context.widgets = [
+            moksha.utils.get_widget('narc_graph'),
+        ]
+        return dict()
+
     @expose('mako:moksha.apps.narcissus.templates.about')
     @with_moksha_socket
     @with_menu
