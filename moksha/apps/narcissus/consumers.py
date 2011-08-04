@@ -43,7 +43,8 @@ Diagram::
 from moksha.api.hub import Consumer
 from moksha.api.hub.producer import PollingProducer
 from pprint import pformat
-from pygeoip import GeoIP, GEOIP_MEMORY_CACHE
+from pygeoip import GeoIP
+from pygeoip.const import GEOIP_MEMORY_CACHE
 from datetime import timedelta, datetime
 from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
