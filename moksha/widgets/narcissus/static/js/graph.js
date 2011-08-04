@@ -30,7 +30,8 @@ $(document).ready(function() {
 
         var force = d3.layout.force()
         .charge(-130)
-        .linkStrength(0.001)
+        .gravity(0.01)
+        .linkStrength(0.1)
         .linkDistance(1000)
         .nodes(nodes)
         .links(links)
