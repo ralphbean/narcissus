@@ -488,10 +488,11 @@ class HttpLightConsumer(Consumer):
                     'bytesout'      : regex_result.group(13),
                 }
 
-                # Now log to the DB.  We're doing this every hit which will be slow.
-                hit = m.ServerHit(**obj)
-                self.DBSession.add(hit)
-                self.DBSession.commit()
+                # XXX - Commenting this out since we never really use it.
+                ## Now log to the DB.  We're doing this every hit which will be slow.
+                #hit = m.ServerHit(**obj)
+                #self.DBSession.add(hit)
+                #self.DBSession.commit()
 
                 # python datetime objects are not JSON serializable
                 # We should make this more readable on the other side
@@ -499,6 +500,9 @@ class HttpLightConsumer(Consumer):
 
                 #self.log.debug("%r built %s" % (self, pformat(obj)))
                 self.send_message('http_latlon', simplejson.dumps(obj))
+                self.send_message('graph_info', simplejson.dumps(
+                    dict((key, obj[key]) for key in ['country', 'filename'])
+                ))
 
             else:
                 #self.log.warn("%r failed on '%s'" % (self, message))

@@ -51,7 +51,7 @@ graphwidget_css = twc.CSSLink(modname=__name__, filename="static/css/graph.css")
 
 class NarcissusGraphWidget(LiveWidget):
     template = "mako:moksha.widgets.narcissus.templates.graph"
-    topic = 'http_latlon'
+    topic = 'graph_info'
     onmessage = "make_connection(json['country'], json['filename'].split('/')[1])"
 
     resources = LiveWidget.resources + [

@@ -29,10 +29,10 @@ $(document).ready(function() {
         .attr("height", h);
 
         var force = d3.layout.force()
-        .charge(-130)
-        .gravity(0.01)
-        .linkStrength(0.1)
-        .linkDistance(1000)
+        .charge(-30)
+        .gravity(0.005)
+        .linkStrength(0.01)
+        .linkDistance(300)
         .nodes(nodes)
         .links(links)
         .size([w, h]);
