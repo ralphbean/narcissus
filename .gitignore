@@ -23,3 +23,5 @@ build
 logs/*.log
 README.html
 README.pdf
+ez_setup
+data
