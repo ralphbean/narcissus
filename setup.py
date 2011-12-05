@@ -14,9 +14,17 @@ except ImportError:
     use_setuptools()
     from setuptools import setup, find_packages
 
+import sys, os
+from setuptools import setup, find_packages
+
+here = os.path.abspath(os.path.dirname(__file__))
+README = open(os.path.join(here, 'README.rst')).read()
+
+README = README.split(".. split here")[1]
+
 setup(
     name='narcissus',
-    version='0.1',
+    version='0.2',
     description='',
     author='',
     author_email='',
@@ -33,8 +41,19 @@ setup(
         "repoze.what-pylons >= 1.0",
         "repoze.what.plugins.sql",
         "repoze.who == 1.0.18",
-        "tgext.admin >= 0.3.9",
-        "tw.forms",
+        "Moksha",
+        "sqlalchemy==0.6.6",
+        "pymysql_sa",
+        "MySQL-python",
+        "decorator",
+        "ansi2html>=0.6.0",
+        "geojson",
+        "pygeoip",
+        "tw2.polymaps>=0.1a3",
+        "tw2.jqplugins.jqplot",
+        "tw2.slideymenu>=2.0b1",
+        "tw2.rrd>=2.0b13",
+        "tw2.jit>=0.3.0",
         ],
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2'],

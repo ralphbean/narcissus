@@ -33,7 +33,7 @@ import ConfigParser
 EXAMPLE_CTL_CONF = """
 # An example ~/.moksha/ctl.conf could look like this
 [narc]
-venv = fancy-narc
+venv = narc
 narc-src-dir = /home/user/devel/narc
 moksha-src-dir = /home/user/devel/moksha
 """
@@ -78,7 +78,7 @@ ctl_config = load_config()
 # Add moksha's src dir to the path so we can import it
 sys.path.insert(0, ctl_config['moksha-src-dir'])
 
-import moksha.ctl.narcissus.ctl as ctl
+import narcissus.ctl.ctl as ctl
 
 usage = "usage: %prog [options] command1 [command2, command3, ...]"
 usage += "\n\n" + __doc__ + "\n\nCommands:\n"

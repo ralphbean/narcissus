@@ -134,14 +134,14 @@ def link_qpid_libs():
 
 
 @_reporter
-@_with_moksha_first
+@_with_moksha_faked
 def start(service=None):
     """ Start paster, orbited, and moksha-hub. """
     return True
 
 
 @_reporter
-@_with_moksha_first
+@_with_moksha_faked
 def stop(service=None):
     """ Stop paster, orbited, and moksha-hub.  """
     return True
@@ -160,13 +160,13 @@ def develop():
 
 
 @_reporter
-@_with_moksha_first
+@_with_moksha_faked
 def restart():
     """ Stop, `python setup.py develop`, start.  """
     return True
 
 
-@_with_moksha_first
+@_with_moksha_faked
 def logs():
     """ Watch colorized logs of paster, orbited, and moksha-hub """
     return True
