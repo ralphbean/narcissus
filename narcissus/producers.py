@@ -12,13 +12,10 @@ class RandomIPProducer(PollingProducer):
     def poll(self):
         """ This method is called by the MokshaHub reactor every `frequency` """
 
-        self.log.info("poll was called")
-
         for i in range(random.randint(1, 10)):
             ip = '.'.join(map(str, (random.randint(0,127) for i in range(4))))
             msg = simplejson.dumps({
                 'ip': ip,
                 'tag': "foo",
             })
-            self.log.info("%r sending %s" % (self, msg))
             self.send_message(self.topic, msg)

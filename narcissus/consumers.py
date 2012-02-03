@@ -438,7 +438,7 @@ class RawIPConsumer(Consumer):
         if not message:
             #self.log.warn("%r got empty message." % self)
             return
-        self.log.info("%r got message '%r'" % (self, message))
+        #self.log.info("%r got message '%r'" % (self, message))
         message = simplejson.loads(message['body'])
 
         # Get IP 2 LatLon info
@@ -556,9 +556,9 @@ class LatLon2GeoJsonConsumer(Consumer):
 
     def consume(self, message):
         if not message:
-            self.log.warn("%r got empty message." % self)
+            #self.log.warn("%r got empty message." % self)
             return
-        self.log.debug("%r got message '%s'" % (self, message))
+        #self.log.debug("%r got message '%s'" % (self, message))
         msg = message['body']
 
         feature = geojson.Feature(
