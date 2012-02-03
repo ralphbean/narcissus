@@ -42,7 +42,8 @@ setup(
         "repoze.what.plugins.sql",
         "repoze.who == 1.0.18",
         "Moksha",
-        "sqlalchemy==0.6.6",
+        "sqlalchemy",
+        "virtualenvcontext",
         "pymysql_sa",
         "MySQL-python",
         "decorator",
@@ -73,12 +74,25 @@ setup(
             ('**.py', 'python', None),
             ('templates/**.mako', 'mako', None),
             ('public/**', 'ignore', None)]},
-
-    entry_points="""
-    [paste.app_factory]
-    main = narcissus.config.middleware:make_app
-
-    [paste.app_install]
-    main = pylons.util:PylonsInstaller
-    """,
+    entry_points={
+        'paste.app_factory': (
+            'main = narcissus.config.middleware:make_app',
+        ),
+        'paste.app_install': (
+            'main = pylons.util:PylonsInstaller',
+        ),
+        'moksha.stream' : (
+            'series_pro = narcissus.consumers:TimeSeriesProducer',
+        ),
+        'moksha.consumer': (
+            'httpdlight = narcissus.consumers:HttpLightConsumer',
+            'latlon2geo = narcissus.consumers:LatLon2GeoJsonConsumer',
+            'series_con = narcissus.consumers:TimeSeriesConsumer',
+        ),
+        'moksha.widget': (
+            'narc_map = narcissus.widgets:NarcissusMapWidget',
+            'narc_graph = narcissus.widgets:NarcissusGraphWidget',
+            'narc_plot = narcissus.widgets:NarcissusPlotWidget',
+        ),
+    },
 )

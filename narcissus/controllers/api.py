@@ -2,7 +2,7 @@ from tg import expose, session, request
 from moksha.lib.base import Controller
 from sqlalchemy.sql.expression import between
 
-import moksha.apps.narcissus.model as m
+import narcissus.model as m
 import kmlcircle
 import datetime
 
@@ -41,20 +41,20 @@ def iplatlondel():
 
 class APIController(Controller):
 
-    @expose('genshi:moksha.apps.narcissus.templates.kml')
+    @expose('genshi:narcissus.templates.kml')
     def kml(self, *args, **kw):
         return dict(
             create=iplatloncreate(),delete=iplatlondel(),
             baseurl=request.application_url + '/api',
         )
 
-    @expose('genshi:moksha.apps.narcissus.templates.kmlinit')
+    @expose('genshi:narcissus.templates.kmlinit')
     def kmlinit(self, *args, **kw):
         return dict(
             baseurl=request.application_url + '/api',
         )
 
-    @expose('genshi:moksha.apps.narcissus.templates.google')
+    @expose('genshi:narcissus.templates.google')
     def google(self, *args, **kw):
         import pprint
         log.warn(pprint.pformat(request))

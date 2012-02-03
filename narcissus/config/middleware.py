@@ -4,6 +4,8 @@
 from narcissus.config.app_cfg import base_config
 from narcissus.config.environment import load_environment
 
+import moksha.middleware
+
 
 __all__ = ['make_app']
 
@@ -32,7 +34,11 @@ def make_app(global_conf, full_stack=True, **app_conf):
     
    
     """
-    app = make_base_app(global_conf, full_stack=True, **app_conf)
+    app = make_base_app(
+        global_conf, full_stack=True,
+        wrap_app=moksha.middleware.make_moksha_middleware,
+        **app_conf
+    )
     
     # Wrap your base TurboGears 2 application with custom middleware here
     

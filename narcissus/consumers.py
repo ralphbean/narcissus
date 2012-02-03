@@ -51,7 +51,7 @@ from subprocess import Popen, PIPE, STDOUT
 from ansi2html import Ansi2HTMLConverter
 from pyrrd.rrd import DataSource, RRD, RRA
 
-import moksha.apps.narcissus.model as m
+import narcissus.model as m
 
 import itertools
 import geojson
@@ -436,7 +436,7 @@ class HttpLightConsumer(Consumer):
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
 
-    geoip_url = '/'.join(__file__.split('/')[:-3] +
+    geoip_url = '/'.join(__file__.split('/')[:-1] +
                          ["public/data/GeoLiteCity.dat"])
     gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
 

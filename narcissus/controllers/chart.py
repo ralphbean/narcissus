@@ -1,14 +1,14 @@
 from tg import expose, validate, tmpl_context, redirect, session
 from moksha.lib.base import Controller
 
-from moksha.apps.narcissus.decorators import (
+from narcissus.decorators import (
     with_moksha_socket,
     with_ui_theme,
     with_menu
 )
-from moksha.apps.narcissus.controllers.api import APIController
-import moksha.apps.narcissus.consumers
-import moksha.widgets.narcissus.widgets as widgets
+from narcissus.controllers.api import APIController
+import narcissus.consumers
+import narcissus.widgets as widgets
 import moksha.utils
 
 import tw2.core
@@ -24,18 +24,18 @@ import logging
 log = logging.getLogger(__name__)
 
 multi_categories = [(cat1, cat2) for cat1, cat2 in itertools.product(
-    moksha.apps.narcissus.consumers.rrd_categories,
-    moksha.apps.narcissus.consumers.rrd_categories,
+    narcissus.consumers.rrd_categories,
+    narcissus.consumers.rrd_categories,
 ) if cat1 != cat2]
 
 def get_rrd_directories(cat1, cat2):
-    basedir = '/'.join([moksha.apps.narcissus.consumers.rrd_dir,
+    basedir = '/'.join([narcissus.consumers.rrd_dir,
                         '__paired__', cat1, cat2])
     dirs = os.listdir(basedir)
     return [basedir + '/' + d + '/' for d in dirs]
 
 def get_rrd_filenames(category):
-    basedir = moksha.apps.narcissus.consumers.rrd_dir + '/' + category + '/'
+    basedir = narcissus.consumers.rrd_dir + '/' + category + '/'
     files = os.listdir(basedir)
     return [basedir + f for f in files]
 
@@ -167,7 +167,7 @@ class ChartController(Controller):
                 id='buttonset_categories',
                 items = [
                     {'id' : 'rb_' + key, 'label' : key.title() }
-                    for key in moksha.apps.narcissus.consumers.rrd_categories
+                    for key in narcissus.consumers.rrd_categories
                 ],
             ),
             widgets.PolyMonoButtonSet(
@@ -210,7 +210,7 @@ class ChartController(Controller):
     def index(self, *args, **kw):
         redirect('/mono')
 
-    @expose('mako:moksha.apps.narcissus.templates.widgets')
+    @expose('mako:narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
@@ -224,8 +224,8 @@ class ChartController(Controller):
             chart = self.mono_charts.keys()[0]
             redirect(default_url.format(**locals()))
 
-        if not category in moksha.apps.narcissus.consumers.rrd_categories:
-            category = moksha.apps.narcissus.consumers.rrd_categories[0]
+        if not category in narcissus.consumers.rrd_categories:
+            category = narcissus.consumers.rrd_categories[0]
             redirect(default_url.format(**locals()))
 
         if not timespan in self.timespans:
@@ -245,7 +245,7 @@ class ChartController(Controller):
         ]
         return dict()
 
-    @expose('mako:moksha.apps.narcissus.templates.widgets')
+    @expose('mako:narcissus.templates.widgets')
     @with_moksha_socket
     @with_menu
     @with_ui_theme
@@ -259,12 +259,12 @@ class ChartController(Controller):
             chart = self.multi_charts.keys()[0]
             redirect(default_url.format(**locals()))
 
-        if not cat1 in moksha.apps.narcissus.consumers.rrd_categories:
-            cat1 = moksha.apps.narcissus.consumers.rrd_categories[0]
+        if not cat1 in narcissus.consumers.rrd_categories:
+            cat1 = narcissus.consumers.rrd_categories[0]
             redirect(default_url.format(**locals()))
 
-        if not cat2 in moksha.apps.narcissus.consumers.rrd_categories:
-            cat2 = moksha.apps.narcissus.consumers.rrd_categories[1]
+        if not cat2 in narcissus.consumers.rrd_categories:
+            cat2 = narcissus.consumers.rrd_categories[1]
             redirect(default_url.format(**locals()))
 
         if not timespan in self.timespans:
