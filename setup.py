@@ -47,7 +47,6 @@ setup(
         "pymysql_sa",
         "MySQL-python",
         "decorator",
-        "ansi2html>=0.6.0",
         "geojson",
         "pygeoip",
         "tw2.polymaps>=0.1a3",
