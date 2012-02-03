@@ -83,8 +83,10 @@ setup(
         ),
         'moksha.stream' : (
             'series_pro = narcissus.consumers:TimeSeriesProducer',
+            'random_lol = narcissus.producers:RandomIPProducer',
         ),
         'moksha.consumer': (
+            'raw_ip = narcissus.consumers:RawIPConsumer',
             'httpdlight = narcissus.consumers:HttpLightConsumer',
             'latlon2geo = narcissus.consumers:LatLon2GeoJsonConsumer',
             'series_con = narcissus.consumers:TimeSeriesConsumer',

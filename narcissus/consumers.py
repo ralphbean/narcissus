@@ -68,9 +68,9 @@ log = logging.getLogger(__name__)
 def _country_extractor(msg):
     return msg['country']
 
-def _filename_extractor(msg):
-    filename = msg['filename']
-    if '/' not in filename:
+def _tag_extractor(msg):
+    tag = msg['tag']
+    if '/' not in tag:
         return None
 
     # Does this file really exist?
@@ -80,21 +80,21 @@ def _filename_extractor(msg):
 
     key = '(parsing error)'
     try:
-        key = filename.split('/')[1]
+        key = tag.split('/')[1]
     except IndexError as e:
         return None
     return key
 
 key_extractors = {
     'country' : _country_extractor,
-    'filename' : _filename_extractor,
+    'tag' : _tag_extractor,
 }
 
 # A constant list of valid rrdtool categories.
 # TODO -- this should be moved to the config
 rrd_categories = [
     'country',
-    'filename',
+    'tag',
 ]
 
 # Log pyrrd files to the current working directory.
@@ -397,7 +397,6 @@ class TimeSeriesConsumer(Consumer):
     topic = 'http_latlon'
     jsonify = True
 
-
     def consume(self, message):
         """ Drop message metrics about country and filename into a bucket """
         if not message:
@@ -420,6 +419,43 @@ class TimeSeriesConsumer(Consumer):
                 _pump_paired_bucket(cat1, cat2, key1, key2)
 
 
+class RawIPConsumer(Consumer):
+    """ Consumes dummy objects for testing like:
+        {
+            'ip': 'some_ip',
+            'tag': 'some_tag',
+        }
+    """
+
+    topic = 'narcissus.hits'
+    jsonify = True
+
+    geoip_url = '/'.join(__file__.split('/')[:-1] +
+                         ["public/data/GeoLiteCity.dat"])
+    gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
+
+    def consume(self, message):
+        if not message:
+            #self.log.warn("%r got empty message." % self)
+            return
+        self.log.info("%r got message '%r'" % (self, message))
+        message = simplejson.loads(message['body'])
+
+        # Get IP 2 LatLon info
+        rec = self.gi.record_by_addr(message['ip'])
+
+        if not(rec and rec['latitude'] and rec['longitude']):
+            self.log.warn("Failed to geo-encode %r" % message)
+            return
+
+        updates = {
+            'lat'           : rec['latitude'],
+            'lon'           : rec['longitude'],
+            'country'       : rec.get('country_name', 'undefined'),
+        }
+        message.update(updates)
+
+        self.send_message('http_latlon', message)
 
 class HttpLightConsumer(Consumer):
     """ Main entry point of raw log messages.
@@ -449,9 +485,13 @@ class HttpLightConsumer(Consumer):
         if not message:
             #self.log.warn("%r got empty message." % self)
             return
-        #self.log.debug("%r got message '%r'" % (self, message))
+        self.log.info("%r got message '%r'" % (self, message))
 
         regex_result = self.llre.match(message.body)
+
+        # TODO -- this should pass off messages to the RawIPConsumer now
+        raise NotImplementedError("this code needs to be updated")
+
         if regex_result and regex_result.group(1):
             # Get IP 2 LatLon info
             rec = self.gi.record_by_addr(regex_result.group(1))
@@ -480,6 +520,7 @@ class HttpLightConsumer(Consumer):
                     'logdatetime'   : log_date,
                     'requesttype'   : regex_result.group(5),
                     'filename'      : regex_result.group(6),
+                    'tag'           : regex_result.group(6),
                     'httptype'      : regex_result.group(7),
                     'statuscode'    : regex_result.group(8),
                     'filesize'      : regex_result.group(9),
@@ -501,12 +542,13 @@ class HttpLightConsumer(Consumer):
                 #self.log.debug("%r built %s" % (self, pformat(obj)))
                 self.send_message('http_latlon', simplejson.dumps(obj))
                 self.send_message('graph_info', simplejson.dumps(
-                    dict((key, obj[key]) for key in ['country', 'filename'])
+                    dict((key, obj[key]) for key in ['country', 'tag'])
                 ))
 
             else:
-                #self.log.warn("%r failed on '%s'" % (self, message))
-                pass
+                self.log.warn("%r failed on '%s'" % (self, message))
+        else:
+            self.log.warn("other failure.")
 
 class LatLon2GeoJsonConsumer(Consumer):
     topic = 'http_latlon'
@@ -514,9 +556,9 @@ class LatLon2GeoJsonConsumer(Consumer):
 
     def consume(self, message):
         if not message:
-            #self.log.warn("%r got empty message." % self)
+            self.log.warn("%r got empty message." % self)
             return
-        #self.log.debug("%r got message '%s'" % (self, message))
+        self.log.debug("%r got message '%s'" % (self, message))
         msg = message['body']
 
         feature = geojson.Feature(
