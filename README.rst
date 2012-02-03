@@ -1,6 +1,6 @@
 Narcissus - Realtime visualizations of web server hits
 ------------------------------------------------------
-.. figure:: narcissus/raw/master/moksha/public/narcissus/images/narcissus-caravaggio.jpg
+.. figure:: narcissus/raw/master/narcissus/public/images/narcissus-caravaggio.jpg
    :align: right
    :scale: 50 %
    :alt: Narcissus wastes a bunch of time.
@@ -11,6 +11,7 @@ Narcissus - Realtime visualizations of web server hits
 
 What is this?
 -------------
+
 This is ``narcissus``.  It is a web application that visualizes web server hits
 as they happen in real time.
 
@@ -75,15 +76,17 @@ that ``narcissus`` instance.  It is pointed at their **very** active `FOSS mirro
 
 Source
 ------
+
 Get the source from `github.com <http://github.com/ralphbean/narcissus>`_.
 
 Running
 -------
-On your machine that will host `narcissus`, say, ``monitoring.host.org``,
-create ``~/.fabricrc`` with the following content::
 
-    narcissus_source_location = ~/narc/narcissus
-    moksha_source_location = ~/narc/moksha
+On your machine that will host `narcissus`, say, ``monitoring.host.org``,
+create ``~/.moksha/ctl.conf`` with the following content::
+
+    narcissus_source_location = /home/threebean/narc/narcissus
+    moksha_source_location = /home/threebean/narc/moksha
 
 Then run the following commands::
 
@@ -91,29 +94,14 @@ Then run the following commands::
     $ git clone git://github.com/ralphbean/narcissus.git
     $ git clone git://github.com/ralphbean/moksha.git
 
-    $ sudo yum -y install fabric
+    $ pushd moksha && git checkout dev && popd
 
-    $ cd moksha
-    $ fab -H localhost boostrap
-    $ sudo service qpidd start
-
-    $ cd ../narcissus
-    $ fab -H localhost install
-
-    $ cd ../moksha
-    $ fab -H localhost restart
-
-In the same place, you may want to run the following command, which can help you
-figure out what's up (if anything is 'up')::
-
-    $ fab -H localhost wtf
-
-If this stuff's not working for you, try this::
-
-    $ cd ~/narc/moksha
-    $ workon moksha
-    $ killall orbited ; killall moksha-hub ; killall paster
-    $ moksha-hub -v & orbited -c orbited.cfg & paster serve development.ini
+    $ pushd narcissus
+    $ ./narc-ctl.py bootstrap
+    $ ./narc-ctl.py rebuild
+    $ ./narc-ctl.py start
+    $ ./narc-ctl.py wtf
+    $ ./narc-ctl.py logs
 
 Finally, on the machine that is being monitored, say, ``monitored.host.org``,
 run the following to setup the narcissus `sending` script::
@@ -141,7 +129,7 @@ Try us in ``#moksha`` on ``irc.freenode.net``.
 
 Authors
 -------
-* Ralph Bean <ralph.bean@gmail.com>
+* Ralph Bean <rbean@redhat.com>
 
   * `threebean.wordpress.com <http://threebean.wordpress.com>`_
 
@@ -158,7 +146,7 @@ Authors
 
 Powered by
 ----------
-.. image:: narcissus/raw/master/moksha/public/narcissus/images/moksha.png
+.. image:: narcissus/raw/master/narcissus/public/images/moksha.png
    :align: left
    :scale: 100 %
    :alt: Moksha

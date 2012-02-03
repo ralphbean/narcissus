@@ -24,10 +24,10 @@ README = README.split(".. split here")[1]
 
 setup(
     name='narcissus',
-    version='0.2',
+    version='0.3',
     description='',
-    author='',
-    author_email='',
+    author='Ralph Bean',
+    author_email='rbean@redhat.com',
     #url='',
     install_requires=[
         "TurboGears2 >= 2.1",
