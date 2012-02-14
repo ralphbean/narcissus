@@ -48,7 +48,6 @@ from pygeoip.const import GEOIP_MEMORY_CACHE
 from datetime import timedelta, datetime
 from hashlib import md5
 from subprocess import Popen, PIPE, STDOUT
-from ansi2html import Ansi2HTMLConverter
 from pyrrd.rrd import DataSource, RRD, RRA
 
 import narcissus.model as m
@@ -572,7 +571,10 @@ class LogColorizer(Consumer):
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
 
-    converter = Ansi2HTMLConverter()
+    def __init__(self, *args, **kw):
+        from ansi2html import Ansi2HTMLConverter
+        self.converter = Ansi2HTMLConverter()
+        super(LogColorizer, self).__init__(*args, **kw)
 
     def consume(self, message):
         if not message:

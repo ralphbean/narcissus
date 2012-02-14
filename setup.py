@@ -49,6 +49,7 @@ setup(
         "decorator",
         "geojson",
         "pygeoip",
+        "ansi2html",
         "tw2.polymaps>=0.1a3",
         "tw2.jqplugins.jqplot",
         "tw2.slideymenu>=2.0b1",
