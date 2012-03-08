@@ -14,45 +14,60 @@ log = logging.getLogger(__name__)
 modal_js = twc.JSLink(modname=__name__,
                       filename='static/js/modal.js')
 
+
 def loading_dialog(href):
     return "javascript:loadingDialog('%s');" % href
 
+
 class NarcissusMenu(MenuWidget):
     resources = MenuWidget.resources + [modal_js]
-    id='awesome-menu'
-    items=[
+    id = 'awesome-menu'
+    items = [
         {
-            'label' : 'Map (live)',
-            'href' : loading_dialog('/map'),
-        },{
-            'label' : 'Graph (live)',
-            'href' : loading_dialog('/graph'),
-        },{
-            'label' : 'Monovariate',
-            'href' : loading_dialog('/chart/mono'),
-        },{
-            'label' : 'Multivariate',
-            'href' : loading_dialog('/chart/multi'),
+            'label': 'Map (live)',
+            'href': loading_dialog('/map'),
         }, {
-            'label' : 'KML API',
-            'href' : loading_dialog('/api/google'),
-        },{
-            'label' : 'About',
-            'href' : loading_dialog('/about'),
+            'label': 'Graph (live)',
+            'href': loading_dialog('/graph'),
+        }, {
+            'label': 'Monovariate',
+            'href': loading_dialog('/chart/mono'),
+        }, {
+            'label': 'Multivariate',
+            'href': loading_dialog('/chart/multi'),
+        }, {
+            'label': 'KML API',
+            'href': loading_dialog('/api/google'),
+        }, {
+            'label': 'About',
+            'href': loading_dialog('/about'),
         }
     ]
 
-d3_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.min.js")
-d3_geom_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.geom.min.js")
-d3_layout_js = twc.JSLink(modname=__name__, filename="static/js/d3/d3.layout.min.js")
+d3_js = twc.JSLink(
+    modname=__name__,
+    filename="static/js/d3/d3.min.js")
+d3_geom_js = twc.JSLink(
+    modname=__name__,
+    filename="static/js/d3/d3.geom.min.js")
+d3_layout_js = twc.JSLink(
+    modname=__name__,
+    filename="static/js/d3/d3.layout.min.js")
 
-graphwidget_js = twc.JSLink(modname=__name__, filename="static/js/graph.js")
-graphwidget_css = twc.CSSLink(modname=__name__, filename="static/css/graph.css")
+graphwidget_js = twc.JSLink(
+    modname=__name__,
+    filename="static/js/graph.js")
+graphwidget_css = twc.CSSLink(
+    modname=__name__,
+    filename="static/css/graph.css")
+
 
 class NarcissusGraphWidget(LiveWidget):
     template = "mako:moksha.widgets.narcissus.templates.graph"
     topic = 'graph_info'
-    onmessage = "make_connection(json['country'], json['filename'].split('/')[1])"
+    onmessage = """
+    make_connection(json['country'], json['filename'].split('/')[1])
+    """
 
     resources = LiveWidget.resources + [
         tw2.jquery.jquery_js,
@@ -67,14 +82,16 @@ class NarcissusGraphWidget(LiveWidget):
 green_css = twc.CSSLink(modname=__name__,
                         filename='static/css/custom_polymap.css')
 
+
 class NarcissusMapWidget(LiveWidget, PolyMap):
+    resources = LiveWidget.resources + PolyMap.resources + [green_css]
     topic = 'http_geojson'
     layer_lifetime = 1000
 
-    onmessage ="addGeoJsonToPolymap('${id}', json, %i)" % layer_lifetime
+    onmessage = "addGeoJsonToPolymap('${id}', json, %i)" % layer_lifetime
 
     zoom = 2.1
-    center_latlon = {'lat': 35.8, 'lon' : -344.2}
+    center_latlon = {'lat': 35.8, 'lon': -344.2}
 
     # Let the user control the map
     interact = True
@@ -92,7 +109,6 @@ class NarcissusMapWidget(LiveWidget, PolyMap):
     # specifies what it looks like.
     css_class = 'midnight-commander-extras'
 
-    resources = LiveWidget.resources + PolyMap.resources + [green_css]
 
 class NarcissusPlotWidget(LiveFlotWidget):
     name = 'Usage of http://mirror.rit.edu'
@@ -110,6 +126,7 @@ class NarcissusPlotWidget(LiveFlotWidget):
 logswidget_js = twc.JSLink(modname=__name__, filename="static/js/logs.js")
 logswidget_css = twc.CSSLink(modname=__name__, filename="static/css/logs.css")
 
+
 class NarcissusLogsWidget(LiveWidget):
     resources = LiveWidget.resources + [
         tw2.jquery.jquery_js,
@@ -124,6 +141,7 @@ class NarcissusLogsWidget(LiveWidget):
 polyselect_css = twc.CSSLink(modname=__name__,
                              filename='static/css/polyselect.css')
 
+
 class PolyMonoButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
     resources = tw2.jqplugins.ui.ButtonSetRadio.resources + [polyselect_css]
 
@@ -135,6 +153,7 @@ class PolyMonoButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
             href = '/chart/mono/'+chart+'/'+category+'/'+timespan;
             loadingDialog(href);
         }"""
+
 
 class PolyMultiButtonSet(tw2.jqplugins.ui.ButtonSetRadio):
     resources = tw2.jqplugins.ui.ButtonSetRadio.resources + [polyselect_css]
