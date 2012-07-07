@@ -26,3 +26,4 @@ README.pdf
 ez_setup
 data
 rrds/
+*.egg*

@@ -55,6 +55,8 @@ setup(
         "tw2.slideymenu>=2.0b1",
         "tw2.rrd>=2.0b13",
         "tw2.jit>=0.3.0",
+        "pylons==1.0", # For TG2 madness
+        "webob==1.0.8", # For TG2 madness
         ],
     setup_requires=["PasteScript >= 1.7"],
     paster_plugins=['PasteScript', 'Pylons', 'TurboGears2'],
