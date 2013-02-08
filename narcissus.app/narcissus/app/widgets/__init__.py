@@ -1,9 +1,9 @@
-from moksha.api.widgets.live import LiveWidget
+from moksha.wsgi.widgets.api.live import LiveWidget
 from tw2.polymaps import PolyMap
 from tw2.jqplugins.jqplot.base import dateAxisRenderer_js
 from tw2.slideymenu import MenuWidget
 
-from moksha.api.widgets.flot import LiveFlotWidget
+from moksha.wsgi.widgets.api.flot import LiveFlotWidget
 
 import tw2.core as twc
 import tw2.jquery
@@ -63,7 +63,7 @@ graphwidget_css = twc.CSSLink(
 
 
 class NarcissusGraphWidget(LiveWidget):
-    template = "mako:moksha.widgets.narcissus.templates.graph"
+    template = "mako:narcissus.app.widgets.templates.graph"
     topic = 'graph_info'
     onmessage = """
     make_connection(json['country'], json['filename'].split('/')[1])
@@ -127,6 +127,10 @@ logswidget_js = twc.JSLink(modname=__name__, filename="static/js/logs.js")
 logswidget_css = twc.CSSLink(modname=__name__, filename="static/css/logs.css")
 
 
+# TODO -- consider this for removal.  We onced used it to pipe logs through ccze
+# and then through python-ansi2html and then over websockets to the browser.  it
+# was hott, but insecure (piping to ccze in the shell allowed arbitrary remote
+# code execution).  Can we do this "all in python"?
 class NarcissusLogsWidget(LiveWidget):
     resources = LiveWidget.resources + [
         tw2.jquery.jquery_js,
