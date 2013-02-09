@@ -41,27 +41,15 @@ Diagram::
 """
 
 from moksha.hub.api import Consumer
-from moksha.hub.api.producer import PollingProducer
-from pprint import pformat
 from pygeoip import GeoIP
 from pygeoip.const import GEOIP_MEMORY_CACHE
-from datetime import timedelta, datetime
-# TODO --check for spurious imports
+from datetime import datetime
 from hashlib import md5
 
-# TODO -- remove
-#from subprocess import Popen, PIPE, STDOUT
-#from pyrrd.rrd import DataSource, RRD, RRA
-#import narcissus.model as m
-
-import itertools
 import geojson
-import simplejson
-import threading
-import time
+import json
 import re
 import os
-
 
 import logging
 log = logging.getLogger(__name__)
@@ -100,7 +88,7 @@ class RawIPConsumer(Consumer):
             #self.log.warn("%r got empty message." % self)
             return
         #self.log.info("%r got message '%r'" % (self, message))
-        message = simplejson.loads(message['body'])
+        message = json.loads(message['body'])
 
         # Get IP 2 LatLon info
         rec = self.gi.record_by_addr(message['ip'])
@@ -193,9 +181,10 @@ class HttpLightConsumer(Consumer):
                 # We should make this more readable on the other side
                 obj['logdatetime'] = str(obj['logdatetime'])
 
+                #from pprint import pformat
                 #self.log.debug("%r built %s" % (self, pformat(obj)))
-                self.send_message('http_latlon', simplejson.dumps(obj))
-                self.send_message('graph_info', simplejson.dumps(
+                self.send_message('http_latlon', json.dumps(obj))
+                self.send_message('graph_info', json.dumps(
                     dict((key, obj[key]) for key in ['country', 'tag'])
                 ))
 
@@ -219,7 +208,7 @@ class LatLon2GeoJsonConsumer(Consumer):
             geometry=geojson.Point([msg['lon'], msg['lat']])
         )
         collection = geojson.FeatureCollection(features=[feature])
-        obj = simplejson.loads(geojson.dumps(collection))
+        obj = json.loads(geojson.dumps(collection))
         self.send_message('http_geojson', obj)
 
 ## Raw colorized logs stuff ##
@@ -259,7 +248,7 @@ class LatLon2GeoJsonConsumer(Consumer):
 #        html = self.converter.convert(ansi, full=False).rstrip()
 #
 #        obj = { 'html' : html }
-#        self.send_message('http_colorlogs', simplejson.dumps(obj))
+#        self.send_message('http_colorlogs', json.dumps(obj))
 
 ## RRDTool stuff ##
 
@@ -298,6 +287,10 @@ class LatLon2GeoJsonConsumer(Consumer):
 ## Log pyrrd files to the current working directory.
 ## TODO -- pull this from configuration
 #rrd_dir = os.getcwd() + '/rrds'
+#
+#import itertools
+#import threading
+#import time
 #
 #PAIRED = '__paired__'
 #AGGREGATE = 'aggregate'
