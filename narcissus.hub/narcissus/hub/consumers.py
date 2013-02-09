@@ -494,9 +494,6 @@ class HttpLightConsumer(Consumer):
 
         regex_result = self.llre.match(message.body)
 
-        # TODO -- this should pass off messages to the RawIPConsumer now
-        raise NotImplementedError("this code needs to be updated")
-
         if regex_result and regex_result.group(1):
             # Get IP 2 LatLon info
             rec = self.gi.record_by_addr(regex_result.group(1))
@@ -534,12 +531,6 @@ class HttpLightConsumer(Consumer):
                     'bytesout'      : regex_result.group(13),
                 }
 
-                # XXX - Commenting this out since we never really use it.
-                ## Now log to the DB.  We're doing this every hit which will be slow.
-                #hit = m.ServerHit(**obj)
-                #self.DBSession.add(hit)
-                #self.DBSession.commit()
-
                 # python datetime objects are not JSON serializable
                 # We should make this more readable on the other side
                 obj['logdatetime'] = str(obj['logdatetime'])
@@ -553,7 +544,7 @@ class HttpLightConsumer(Consumer):
             else:
                 self.log.warn("%r failed on '%s'" % (self, message))
         else:
-            self.log.warn("other failure.")
+            self.log.warn("regex failure.")
 
 class LatLon2GeoJsonConsumer(Consumer):
     topic = 'http_latlon'
