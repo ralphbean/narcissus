@@ -40,17 +40,19 @@ Diagram::
 |                  NarcissusPlotWidget
 """
 
-from moksha.api.hub import Consumer
-from moksha.api.hub.producer import PollingProducer
+from moksha.hub.api import Consumer
+from moksha.hub.api.producer import PollingProducer
 from pprint import pformat
 from pygeoip import GeoIP
 from pygeoip.const import GEOIP_MEMORY_CACHE
 from datetime import timedelta, datetime
+# TODO --check for spurious imports
 from hashlib import md5
-from subprocess import Popen, PIPE, STDOUT
-from pyrrd.rrd import DataSource, RRD, RRA
 
-import narcissus.model as m
+# TODO -- remove
+#from subprocess import Popen, PIPE, STDOUT
+#from pyrrd.rrd import DataSource, RRD, RRA
+#import narcissus.model as m
 
 import itertools
 import geojson
@@ -429,8 +431,10 @@ class RawIPConsumer(Consumer):
     topic = 'narcissus.hits'
     jsonify = True
 
-    geoip_url = '/'.join(__file__.split('/')[:-1] +
-                         ["public/data/GeoLiteCity.dat"])
+    # TODO -- get this location from config
+    geoip_url = '/'.join([
+        os.getcwd(), "data", "GeoLiteCity.dat",
+    ])
     gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
 
     def consume(self, message):
@@ -467,12 +471,14 @@ class HttpLightConsumer(Consumer):
 
     """
 
-    app = 'narcissus' # this connects our ``self.DBSession``
+    #app = 'narcissus' # this connects our ``self.DBSession``
     topic = 'httpdlight_http_rawlogs'
     jsonify = False
 
-    geoip_url = '/'.join(__file__.split('/')[:-1] +
-                         ["public/data/GeoLiteCity.dat"])
+    # TODO -- get this location from config
+    geoip_url = '/'.join([
+        os.getcwd(), "data", "GeoLiteCity.dat",
+    ])
     gi = GeoIP(geoip_url, GEOIP_MEMORY_CACHE)
 
     def __init__(self, *args, **kwargs):
