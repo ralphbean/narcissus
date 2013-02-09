@@ -29,15 +29,17 @@ class NarcissusMenu(MenuWidget):
         }, {
             'label': 'Graph (live)',
             'href': loading_dialog('/graph'),
-        }, {
-            'label': 'Monovariate',
-            'href': loading_dialog('/chart/mono'),
-        }, {
-            'label': 'Multivariate',
-            'href': loading_dialog('/chart/multi'),
-        }, {
-            'label': 'KML API',
-            'href': loading_dialog('/api/google'),
+        # This is old code from the TG2/moksha-0.5 days.
+        # ... left here for "historical purposes"
+        #}, {
+        #    'label': 'Monovariate',
+        #    'href': loading_dialog('/chart/mono'),
+        #}, {
+        #    'label': 'Multivariate',
+        #    'href': loading_dialog('/chart/multi'),
+        #}, {
+        #    'label': 'KML API',
+        #    'href': loading_dialog('/api/google'),
         }, {
             'label': 'About',
             'href': loading_dialog('/about'),
