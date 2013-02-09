@@ -34,14 +34,17 @@ setup(
     namespace_packages=['narcissus'],
     entry_points={
         'moksha.stream' : (
+            ## Enable this to *test* narcissus.  It produces random ips.
+            #'random_lol = narcissus.hub.producers:RandomIPProducer',
+
             # We used to keep these in an rrd database.  That was too heavy.
             #'series_pro = narcissus.hub.consumers:TimeSeriesProducer',
-            'random_lol = narcissus.hub.producers:RandomIPProducer',
         ),
         'moksha.consumer': (
             'raw_ip =     narcissus.hub.consumers:RawIPConsumer',
             'httpdlight = narcissus.hub.consumers:HttpLightConsumer',
             'latlon2geo = narcissus.hub.consumers:LatLon2GeoJsonConsumer',
+
             # We used to keep these in an rrd database.  That was too heavy.
             #'series_con = narcissus.hub.consumers:TimeSeriesConsumer',
         ),
