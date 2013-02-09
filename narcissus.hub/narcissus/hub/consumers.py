@@ -185,8 +185,12 @@ class HttpLightConsumer(Consumer):
                 #from pprint import pformat
                 #self.log.debug("%r built %s" % (self, pformat(obj)))
                 self.send_message('http_latlon', json.dumps(obj))
-                self.send_message('graph_info', json.dumps(
-                    dict((key, obj[key]) for key in ['country', 'tag'])
+                self.send_message('graph_info', dict(
+                    (key, obj[key]) for key in [
+                        'country',
+                        'tag',
+                        'filename',
+                    ]
                 ))
 
             else:
