@@ -91,16 +91,16 @@ class RawIPConsumer(Consumer):
         message = json.loads(message['body'])
 
         # Get IP 2 LatLon info
-        rec = self.gi.record_by_addr(message['ip'])
+        record = self.gi.record_by_addr(message['ip'])
 
-        if not(rec and rec['latitude'] and rec['longitude']):
+        if not(record and record['latitude'] and record['longitude']):
             self.log.warn("Failed to geo-encode %r" % message)
             return
 
         updates = {
-            'lat'           : rec['latitude'],
-            'lon'           : rec['longitude'],
-            'country'       : rec.get('country_name', 'undefined'),
+            'lat'           : record['latitude'],
+            'lon'           : record['longitude'],
+            'country'       : record.get('country_name', 'undefined'),
         }
         message.update(updates)
 
@@ -136,14 +136,15 @@ class HttpLightConsumer(Consumer):
         if not message:
             #self.log.warn("%r got empty message." % self)
             return
+
         self.log.info("%r got message '%r'" % (self, message))
 
         regex_result = self.llre.match(message.body)
 
         if regex_result and regex_result.group(1):
             # Get IP 2 LatLon info
-            rec = self.gi.record_by_addr(regex_result.group(1))
-            if rec and rec['latitude'] and rec['longitude']:
+            record = self.gi.record_by_addr(regex_result.group(1))
+            if record and record['latitude'] and record['longitude']:
 
                 # Strip the timezone from the logged timestamp.  Python can't
                 # parse it.
@@ -162,9 +163,9 @@ class HttpLightConsumer(Consumer):
                 # around town (and use to build a model.ServerHit object.
                 obj = {
                     'ip'            : regex_result.group(1),
-                    'lat'           : rec['latitude'],
-                    'lon'           : rec['longitude'],
-                    'country'       : rec.get('country_name', 'undefined'),
+                    'lat'           : record['latitude'],
+                    'lon'           : record['longitude'],
+                    'country'       : record.get('country_name', 'undefined'),
                     'logdatetime'   : log_date,
                     'requesttype'   : regex_result.group(5),
                     'filename'      : regex_result.group(6),
@@ -189,7 +190,11 @@ class HttpLightConsumer(Consumer):
                 ))
 
             else:
-                self.log.warn("%r failed on '%s'" % (self, message))
+                self.log.warn("%r geocode failed on '%s' with %r" % (
+                    type(self).__name__,
+                    message,
+                    record,
+                ))
         else:
             self.log.warn("regex failure.")
 
