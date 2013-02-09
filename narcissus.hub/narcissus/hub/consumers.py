@@ -209,6 +209,9 @@ class LatLon2GeoJsonConsumer(Consumer):
         #self.log.debug("%r got message '%s'" % (self, message))
         msg = message['body']
 
+        if isinstance(msg, basestring):
+            msg = json.loads(msg)
+
         feature = geojson.Feature(
             geometry=geojson.Point([msg['lon'], msg['lat']])
         )
