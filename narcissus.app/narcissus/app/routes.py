@@ -25,6 +25,11 @@ simple_template = """
 """
 
 
+def asbool(some_value):
+    """ Cast config values to boolean. """
+    return str(some_value).lower() in ['y', 'yes', 't', 'true', '1', 'on']
+
+
 @app.route("/")
 def default():
     return redirect("/map")
@@ -61,7 +66,11 @@ def main():
     app.wsgi_app = make_moksha_middleware(app.wsgi_app, config)
     app.wsgi_app = make_middleware(app.wsgi_app)
 
-    app.run(debug=True)
+    app.run(
+        debug=asbool(config.get('debug', False)),
+        host=config.get('host', 'localhost'),
+        port=int(config.get('port', '5000')),
+    )
 
 if __name__ == "__main__":
     main()
