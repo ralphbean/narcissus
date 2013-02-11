@@ -1,0 +1,4 @@
+recursive-include data *
+include development.ini
+include LICENSE
+include README.rst

@@ -20,37 +20,40 @@ parser.add_option("-p", "--topic", dest="topic",
                   help="zeromq topic to talk on.")
 parser.add_option("-d", "--debug", dest="debug", action="store_true",
                   help="debug what messages are being sent")
-options, args = parser.parse_args()
 
-options.targets = [t.strip() for t in options.targets.split(',')]
 
-ctx = zmq.Context()
-s = ctx.socket(zmq.PUB)
+def main():
+    options, args = parser.parse_args()
 
-# Create connection and session
-session_dicts = []
-for target in options.targets:
-    print "Binding to %r for publishing" % target
-    try:
-        s.bind(target)
-        print "    Created target", target
-    except Exception as e:
-        print "    Failed to create target", target
-        print str(e)
-        import traceback
-        traceback.print_exc()
+    options.targets = [t.strip() for t in options.targets.split(',')]
 
-print "Entering mainloop"
-while True:
-    msg = sys.stdin.readline()
-    if not msg:
-        break
+    ctx = zmq.Context()
+    s = ctx.socket(zmq.PUB)
 
-    if options.debug:
-        print "[sending]",msg
+    # Create connection and session
+    session_dicts = []
+    for target in options.targets:
+        print "Binding to %r for publishing" % target
+        try:
+            s.bind(target)
+            print "    Created target", target
+        except Exception as e:
+            print "    Failed to create target", target
+            print str(e)
+            import traceback
+            traceback.print_exc()
 
-    print options.topic, msg,
-    s.send_multipart((options.topic, msg))
+    print "Entering mainloop"
+    while True:
+        msg = sys.stdin.readline()
+        if not msg:
+            break
 
-s.close()
-ctx.destroy()
+        if options.debug:
+            print "[sending]", msg
+
+        print options.topic, msg,
+        s.send_multipart((options.topic, msg))
+
+    s.close()
+    ctx.destroy()

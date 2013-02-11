@@ -1,0 +1,3 @@
+include development.ini
+include LICENSE
+include README.rst
