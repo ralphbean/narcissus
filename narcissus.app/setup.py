@@ -23,7 +23,7 @@ f.close()
 
 setup(
     name='narcissus.app',
-    version='0.9.0.2',
+    version='0.9.1',
     description='WSGI app for Narcissus, realtime log visualization',
     long_description=long_description,
     license="AGPLv3+",
