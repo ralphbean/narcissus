@@ -1,4 +1,4 @@
-This package contains the "hub" components for `narcissus
+This package contains the "wsgi" components for `narcissus
 <https://github.com/ralphbean/narcissus>`_.
 
 Narcissus is a web application that visualizes web server hits
