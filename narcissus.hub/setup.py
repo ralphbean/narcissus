@@ -40,8 +40,8 @@ setup(
     namespace_packages=['narcissus'],
     classifiers=[
         "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
-        "Topic :: Scientific/Engineering :: Visualization"
-        "Topic :: System :: Logging"
+        "Topic :: Scientific/Engineering :: Visualization",
+        "Topic :: System :: Logging",
         "Topic :: System :: Monitoring",
         "Intended Audience :: System Administrators",
         "Programming Language :: Python :: 2",
